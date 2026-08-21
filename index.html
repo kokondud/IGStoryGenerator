@@ -605,13 +605,10 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
   <div class="fst">Market Takeaway</div>
   <div class="ff"><label class="fl">Narasi</label><textarea class="fi" id="m-tw" placeholder="Wall Street menguat..." oninput="up('morning')"></textarea></div>
 
-  <div class="fst">Today's Catalyst (maks 4 poin)</div>
-<div class="ff" style="margin-bottom:6px"><label class="fl">Poin 1</label><input class="fi" id="m-cat1" placeholder="NFP AS di atas ekspektasi" oninput="up('morning')"></div>
-<div class="ff" style="margin-bottom:6px"><label class="fl">Poin 2</label><input class="fi" id="m-cat2" placeholder="Harga nikel rebound" oninput="up('morning')"></div>
-<div class="ff" style="margin-bottom:6px"><label class="fl">Poin 3</label><input class="fi" id="m-cat3" placeholder="Rupiah stabil di area 16.400" oninput="up('morning')"></div>
-<div class="ff"><label class="fl">Poin 4</label><input class="fi" id="m-cat4" placeholder="Yield US Treasury turun" oninput="up('morning')"></div>
+  <div class="fst" id="fst-cat">Today's Catalyst (maks 4 poin)</div>
+  <div id="m-cat-form"></div>
 
-  <div class="fst">Stock Pick (Page 2)</div>
+  <div class="fst" id="fst-msp">Stock Pick (Page 2, maks 3)</div>
   <div id="m-sp-form"></div>
 
  <div class="fst" id="fst-ca">KISI Info — Corp Action (Page 3, maks 6)</div>
@@ -644,7 +641,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
   </div>
   <div class="section-collapsible" id="sec-ipo"><div id="m-ipo-form"></div></div>
 
-  <div class="fst">Featured News (Page 4, maks 4)</div>
+  <div class="fst" id="fst-mnews">Featured News (Page 4, maks 5)</div>
   <div id="m-news-form"></div>
 
   <div class="dl-grp">
@@ -684,12 +681,12 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
   </div>
   <div class="fst">Market Insight Sesi 2</div>
   <div class="ff"><label class="fl">Outlook</label><textarea class="fi" id="h-insight" placeholder="Tekanan jual mereda..." oninput="up('halftime')"></textarea></div>
-  <div class="fst">Sector Driver — 3 Naik</div>
+  <div class="fst" id="fst-hdrvpos">Sector Driver — Naik (maks 3)</div>
 <div id="h-drv-pos-form"></div>
-<div class="fst">Sector Driver — 3 Turun</div>
+<div class="fst" id="fst-hdrvneg">Sector Driver — Turun (maks 3)</div>
 <div id="h-drv-neg-form"></div>
   
-  <div class="fst">Stock Pick Sesi 2 (Page 2)</div>
+  <div class="fst" id="fst-hsp">Stock Pick Sesi 2 (Page 2, maks 3)</div>
   <div id="h-sp-form"></div>
 
   <div class="dl-grp">
@@ -740,9 +737,9 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
 
   <div class="fst">Index Contribution (Page 2)</div>
   <p style="font-size:11px;color:var(--t2);margin-bottom:8px">Saham yang berkontribusi mendorong IHSG naik/turun hari ini</p>
-  <div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:5px">▲ Kontributor Positif (maks 5)</div>
+  <div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:5px" id="fst-wpos">▲ Kontributor Positif (maks 5)</div>
   <div id="w-pos-contrib-form"></div>
-  <div style="font-size:10px;font-weight:700;color:var(--red);margin:8px 0 5px">▼ Kontributor Negatif (maks 5)</div>
+  <div style="font-size:10px;font-weight:700;color:var(--red);margin:8px 0 5px" id="fst-wneg">▼ Kontributor Negatif (maks 5)</div>
   <div id="w-neg-contrib-form"></div>
 
   <div class="dl-grp">
@@ -760,15 +757,15 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
     <div class="ff"><label class="fl">Keterangan Data (NAV)</label><input class="fi" id="wk-nav-note" placeholder="Data NAV 24 April 2026" oninput="up('weekly')"></div>
   </div>
 
-  <div class="fst">Page 1 — Pasar Uang</div>
+  <div class="fst">Page 1 — Pasar Uang (1–5 reksa dana)</div>
   <div id="wk-pu-form"></div>
-  <div class="fst">Page 2 — Pendapatan Tetap</div>
+  <div class="fst">Page 2 — Pendapatan Tetap (1–5 reksa dana)</div>
   <div id="wk-pt-form"></div>
-  <div class="fst">Page 3 — Campuran</div>
+  <div class="fst">Page 3 — Campuran (1–5 reksa dana)</div>
   <div id="wk-cp-form"></div>
-  <div class="fst">Page 4 — Saham</div>
+  <div class="fst">Page 4 — Saham (1–5 reksa dana)</div>
   <div id="wk-sh-form"></div>
-  <div class="fst">Page 5 — Indeks</div>
+  <div class="fst">Page 5 — Indeks (1–5 reksa dana)</div>
   <div id="wk-id-form"></div>
 
   <div class="dl-grp">
@@ -787,9 +784,9 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
     <div class="ff"><label class="fl">Tanggal Terbit</label><input type="date" class="fi" id="bp-date" oninput="up('bondpicks')"></div>
     <div class="ff"><label class="fl">Keterangan Tanggal Data</label><input class="fi" id="bp-note" placeholder="27 April 2026" oninput="up('bondpicks')"></div>
   </div>
-  <div class="fst">Top 3 Government Bonds</div>
+  <div class="fst">Government Bonds (1–4)</div>
   <div id="bp-gov-form"></div>
-  <div class="fst">Top 3 Corporate Bonds</div>
+  <div class="fst">Corporate Bonds (1–4)</div>
   <div id="bp-corp-form"></div>
   <div class="fst">CTA (Call to Action)</div>
   <div class="fg">
@@ -1158,7 +1155,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
         <div class="sc-wk-date" id="wk-p1-date">Senin, 27 April 2026</div>
       </div>
       <div class="sc-wk-title">Reksa Dana<br>Pasar Uang</div>
-      <div class="sc-wk-subtitle">Top 5 Minggu Ini</div><br>
+      <div class="sc-wk-subtitle">Top Minggu Ini</div><br>
       
       <div class="sc-rd-list" id="wk-p1-list">
           <div class="sc-rd" id="wk-p1-list-0">
@@ -1203,7 +1200,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
           </div></div>
       <div class="sc-wk-note" id="wk-p1-note">1 Yr Return (Data NAV 24 April 2026)</div>
       <div class="sc-wk-pager"><div class="sc-wk-pager-dot  on"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div></div>
-      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Semua investasi memiliki risiko. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
+      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Investasi (termasuk reksa dana) mengandung risiko. Kinerja masa lalu tidak mencerminkan kinerja masa depan. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
     </div>
   </div>
   <div class="pw-sz">360×640</div>
@@ -1221,7 +1218,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
         <div class="sc-wk-date" id="wk-p2-date">Senin, 27 April 2026</div>
       </div>
       <div class="sc-wk-title">Reksa Dana<br>Pendapatan Tetap</div>
-      <div class="sc-wk-subtitle">Top 5 Minggu Ini</div><br>
+      <div class="sc-wk-subtitle">Top Minggu Ini</div><br>
       
       <div class="sc-rd-list" id="wk-p2-list">
           <div class="sc-rd" id="wk-p2-list-0">
@@ -1266,7 +1263,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
           </div></div>
       <div class="sc-wk-note" id="wk-p2-note">1 Yr Return (Data NAV 24 April 2026)</div>
       <div class="sc-wk-pager"><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot  on"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div></div>
-      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Semua investasi memiliki risiko. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
+      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Investasi (termasuk reksa dana) mengandung risiko. Kinerja masa lalu tidak mencerminkan kinerja masa depan. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
     </div>
   </div>
   <div class="pw-sz">360×640</div>
@@ -1284,7 +1281,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
         <div class="sc-wk-date" id="wk-p3-date">Senin, 27 April 2026</div>
       </div>
       <div class="sc-wk-title">Reksa Dana<br>Campuran</div>
-      <div class="sc-wk-subtitle">Top 5 Minggu Ini</div><br>
+      <div class="sc-wk-subtitle">Top Minggu Ini</div><br>
       <div class="sc-rd-list" id="wk-p3-list">
           <div class="sc-rd" id="wk-p3-list-0">
             <div class="sc-rd-left">
@@ -1328,7 +1325,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
           </div></div>
       <div class="sc-wk-note" id="wk-p3-note">1 Yr Return (Data NAV 24 April 2026)</div>
       <div class="sc-wk-pager"><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot  on"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div></div>
-      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Semua investasi memiliki risiko. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
+      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Investasi (termasuk reksa dana) mengandung risiko. Kinerja masa lalu tidak mencerminkan kinerja masa depan. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
     </div>
   </div>
   <div class="pw-sz">360×640</div>
@@ -1346,7 +1343,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
         <div class="sc-wk-date" id="wk-p4-date">Senin, 27 April 2026</div>
       </div>
       <div class="sc-wk-title">Reksa Dana<br>Saham</div>
-      <div class="sc-wk-subtitle">Top 5 Minggu Ini</div><br>
+      <div class="sc-wk-subtitle">Top Minggu Ini</div><br>
       <div class="sc-rd-list" id="wk-p4-list">
           <div class="sc-rd" id="wk-p4-list-0">
             <div class="sc-rd-left">
@@ -1390,7 +1387,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
           </div></div>
       <div class="sc-wk-note" id="wk-p4-note">1 Yr Return (Data NAV 24 April 2026)</div>
       <div class="sc-wk-pager"><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot  on"></div><div class="sc-wk-pager-dot"></div></div>
-      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Semua investasi memiliki risiko. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
+      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Investasi (termasuk reksa dana) mengandung risiko. Kinerja masa lalu tidak mencerminkan kinerja masa depan. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
     </div>
   </div>
   <div class="pw-sz">360×640</div>
@@ -1408,7 +1405,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
         <div class="sc-wk-date" id="wk-p5-date">Senin, 27 April 2026</div>
       </div>
       <div class="sc-wk-title">Reksa Dana<br>Indeks</div>
-      <div class="sc-wk-subtitle">Top 5 Minggu Ini</div><br>
+      <div class="sc-wk-subtitle">Top Minggu Ini</div><br>
       <div class="sc-rd-list" id="wk-p5-list">
           <div class="sc-rd" id="wk-p5-list-0">
             <div class="sc-rd-left">
@@ -1452,7 +1449,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
           </div></div>
       <div class="sc-wk-note" id="wk-p5-note">1 Yr Return (Data NAV 24 April 2026)</div>
       <div class="sc-wk-pager"><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot"></div><div class="sc-wk-pager-dot  on"></div></div>
-      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Semua investasi memiliki risiko. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
+      <div class="sc-wk-foot">PT Korea Investment And Sekuritas Indonesia · Berizin dan Diawasi OJK<br>Investasi (termasuk reksa dana) mengandung risiko. Kinerja masa lalu tidak mencerminkan kinerja masa depan. Lakukan analisis mandiri sebelum mengambil keputusan.</div>
     </div>
   </div>
   <div class="pw-sz">360×640</div>
@@ -1472,7 +1469,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
         <div class="sc-bp-date" id="bp-p1-date">Senin, 27 April 2026</div>
       </div>
       <div class="sc-bp-title">Weekly<br>Bond Picks</div>
-      <div class="sc-bp-cat"><div class="sc-bp-top">Top 3</div><div class="sc-bp-catname">Government Bonds</div></div>
+      <div class="sc-bp-cat"><div class="sc-bp-top">Top </div><div class="sc-bp-catname">Government Bonds</div></div>
       <div class="sc-bond-list" id="bp-p1-list"></div>
       <div class="sc-bp-note" id="bp-p1-note">Data pertanggal 27 April 2026</div>
       <div class="sc-bp-cta-wrap">
@@ -1506,7 +1503,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
         <div class="sc-bp-date" id="bp-p2-date">Senin, 27 April 2026</div>
       </div>
       <div class="sc-bp-title">Weekly<br>Bond Picks</div>
-      <div class="sc-bp-cat"><div class="sc-bp-top">Top 3</div><div class="sc-bp-catname">Corporate Bonds</div></div>
+      <div class="sc-bp-cat"><div class="sc-bp-top">Top </div><div class="sc-bp-catname">Corporate Bonds</div></div>
       <div class="sc-bond-list" id="bp-p2-list"></div>
       <div class="sc-bp-note" id="bp-p2-note">Data pertanggal 27 April 2026</div>
       <div class="sc-bp-cta-wrap">
@@ -1605,7 +1602,8 @@ function stockHTML(action,ticker,sector,reason,levels){
 }
 
 // ---- MORNING STATE ----
-const mStocks=[
+let mCatalyst=['NFP AS di atas ekspektasi','Harga nikel rebound','Rupiah stabil di area 16.400','Yield US Treasury turun'];
+let mStocks=[
   {a:'buy',tk:'NCKL',sec:'Basic Materials',rsn:'Harga nikel rebound dari support kuat, volume beli meningkat. Katalis positif dari permintaan baterai EV global.',t2:'1.125',t1:'1.185',entry:'1.110–1.090',sl:'1.050'},
   {a:'sell',tk:'ASII',sec:'Consumer Cyclicals',rsn:'Menyentuh resistance kuat di 5.200, indikator teknikal overbought. Rawan aksi taking profit jangka pendek.',r2:'5.350',r1:'5.200',s1:'4.950',s2:'4.800'},
 ];
@@ -1633,7 +1631,7 @@ let mIPO=[
   {tk:'',type:'IPO',badge:''},
   {tk:'',type:'IPO',badge:''},
 ];
-const mNews=[
+let mNews=[
   {tk:'BTPN',txt:'Akan membagikan dividen tunai sebesar Rp101,11 miliar (sekitar Rp9,49 per saham), yang mencerminkan sekitar 20% dari laba bersih tahun 2025.',src:'Emiten News'},
   {tk:'PGAS',txt:'Membukukan laba bersih sebesar USD 90,45 juta pada kuartal I 2026, melonjak 45,84% secara tahunan.',src:'Emiten News'},
   {tk:'NAYZ',txt:'Akan diakuisisi oleh perusahaan Singapura, Saiko Consultancy Pte Ltd, yang mengambil alih 41,18% saham dari pengendali lama.',src:'Kontan'},
@@ -1649,6 +1647,7 @@ function buildMStockForm(){
           <button class="spt buy ${s.a==='buy'?'on':''}" onclick="setMS(${i},'buy')">BUY</button>
           <button class="spt sell ${s.a==='sell'?'on':''}" onclick="setMS(${i},'sell')">SELL</button>
         </div>
+        ${mStocks.length>1?`<button onclick="removeItem('mstock',${i})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif;margin-left:6px">× Hapus</button>`:''}
       </div>
       <div class="fg" style="margin-bottom:5px">
         <div class="ff"><label class="fl">Ticker</label><input class="fi" id="m-tk-${i}" value="${s.tk}" oninput="up('morning')"></div>
@@ -1661,7 +1660,8 @@ function buildMStockForm(){
       <div id="m-sell-${i}" style="${s.a!=='sell'?'display:none':''}">
         <div class="fg"><div class="ff"><label class="fl">Resistance 2</label><input class="fi" id="m-r2-${i}" value="${s.r2||''}" oninput="up('morning')"></div><div class="ff"><label class="fl">Resistance 1</label><input class="fi" id="m-r1-${i}" value="${s.r1||''}" oninput="up('morning')"></div><div class="ff"><label class="fl">Support 1</label><input class="fi" id="m-s1-${i}" value="${s.s1||''}" oninput="up('morning')"></div><div class="ff"><label class="fl">Support 2</label><input class="fi" id="m-s2-${i}" value="${s.s2||''}" oninput="up('morning')"></div></div>
       </div>
-    </div>`).join('');
+    </div>`).join('') + (mStocks.length<3 ? `
+    <button onclick="addItem('mstock')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">+ Tambah Stock Pick</button>` : '');
 }
 function setMS(i,a){mStocks[i].a=a;buildMStockForm();up('morning');}
 
@@ -1733,35 +1733,55 @@ function buildMNewsForm(){
         <div class="ff"><label class="fl">Sumber</label><input class="fi" id="mn-src-${i}" value="${n.src}" oninput="up('morning')"></div>
       </div>
       <div class="ff"><label class="fl">Berita</label><textarea class="fi" id="mn-txt-${i}" oninput="up('morning')" style="min-height:48px">${n.txt}</textarea></div>
-    </div>`).join('');
+      ${mNews.length>1?`<button onclick="removeItem('news',${i})" style="margin-top:6px;font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif">× Hapus</button>`:''}
+    </div>`).join('') + (mNews.length<5 ? `
+    <button onclick="addItem('news')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">+ Tambah Berita</button>` : '');
+}
+function buildMCatalystForm(){
+  const el=document.getElementById('m-cat-form');
+  el.innerHTML=mCatalyst.map((c,i)=>`
+    <div class="ff" style="margin-bottom:6px;flex-direction:row;align-items:flex-end;gap:6px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+        <label class="fl">Poin ${i+1}</label>
+        <input class="fi" id="m-cat-${i}" value="${c}" oninput="up('morning')">
+      </div>
+      ${mCatalyst.length>1?`<button onclick="removeItem('cat',${i})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:6px 8px;cursor:pointer;font-family:'Inter',sans-serif">× Hapus</button>`:''}
+    </div>`).join('') + (mCatalyst.length<4 ? `
+    <button onclick="addItem('cat')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">+ Tambah Poin Catalyst</button>` : '');
 }
 
 // ---- HALFTIME STATE ----
-const hDrvs=[
+let hDrvPos=[
   {n:'Financials',c:'+0,85'},
   {n:'Konsumer',c:'+0,42'},
   {n:'Healthcare',c:'+0,31'},
+];
+let hDrvNeg=[
   {n:'Energi',c:'-1,20'},
   {n:'Properti',c:'-0,63'},
   {n:'Mining',c:'-0,45'},
 ];
-const hStocks=[
+let hStocks=[
   {a:'buy',tk:'BBRI',sec:'Financials',rsn:'Breakout MA50 dengan volume solid, momentum positif.',t2:'4.800',t1:'4.600',entry:'4.450–4.400',sl:'4.300'},
   {a:'sell',tk:'TLKM',sec:'Telco',rsn:'Bearish engulfing di resistance, tekanan jual meningkat.',r2:'3.600',r1:'3.500',s1:'3.300',s2:'3.200'},
 ];
 function buildHForm(){
   const dpf=document.getElementById('h-drv-pos-form');
-  dpf.innerHTML=[0,1,2].map(i=>`
-    <div class="fg" style="margin-bottom:5px">
-      <div class="ff"><label class="fl">Sektor ${i+1}</label><input class="fi" id="hdrv-n-${i}" value="${hDrvs[i].n}" oninput="up('halftime')"></div>
-      <div class="ff"><label class="fl">%</label><input class="fi" id="hdrv-c-${i}" value="${hDrvs[i].c}" oninput="up('halftime')"></div>
-    </div>`).join('');
+  dpf.innerHTML=hDrvPos.map((d,i)=>`
+    <div class="fg" style="margin-bottom:5px;align-items:flex-end">
+      <div class="ff"><label class="fl">Sektor ${i+1}</label><input class="fi" id="hdrvp-n-${i}" value="${d.n}" oninput="up('halftime')"></div>
+      <div class="ff"><label class="fl">%</label><input class="fi" id="hdrvp-c-${i}" value="${d.c}" oninput="up('halftime')"></div>
+      ${hDrvPos.length>1?`<button onclick="removeItem('hdrvpos',${i})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:6px 8px;cursor:pointer;font-family:'Inter',sans-serif;height:fit-content">× Hapus</button>`:''}
+    </div>`).join('') + (hDrvPos.length<3 ? `
+    <button onclick="addItem('hdrvpos')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:8px">+ Tambah Sektor Naik</button>` : '');
   const dnf=document.getElementById('h-drv-neg-form');
-  dnf.innerHTML=[3,4,5].map(i=>`
-    <div class="fg" style="margin-bottom:5px">
-      <div class="ff"><label class="fl">Sektor ${i-2}</label><input class="fi" id="hdrv-n-${i}" value="${hDrvs[i].n}" oninput="up('halftime')"></div>
-      <div class="ff"><label class="fl">%</label><input class="fi" id="hdrv-c-${i}" value="${hDrvs[i].c}" oninput="up('halftime')"></div>
-    </div>`).join('');
+  dnf.innerHTML=hDrvNeg.map((d,i)=>`
+    <div class="fg" style="margin-bottom:5px;align-items:flex-end">
+      <div class="ff"><label class="fl">Sektor ${i+1}</label><input class="fi" id="hdrvn-n-${i}" value="${d.n}" oninput="up('halftime')"></div>
+      <div class="ff"><label class="fl">%</label><input class="fi" id="hdrvn-c-${i}" value="${d.c}" oninput="up('halftime')"></div>
+      ${hDrvNeg.length>1?`<button onclick="removeItem('hdrvneg',${i})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:6px 8px;cursor:pointer;font-family:'Inter',sans-serif;height:fit-content">× Hapus</button>`:''}
+    </div>`).join('') + (hDrvNeg.length<3 ? `
+    <button onclick="addItem('hdrvneg')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:8px">+ Tambah Sektor Turun</button>` : '');
   const sf=document.getElementById('h-sp-form');
   sf.innerHTML=hStocks.map((s,i)=>`
     <div class="sp-card">
@@ -1770,6 +1790,7 @@ function buildHForm(){
           <button class="spt buy ${s.a==='buy'?'on':''}" onclick="setHS(${i},'buy')">BUY</button>
           <button class="spt sell ${s.a==='sell'?'on':''}" onclick="setHS(${i},'sell')">SELL</button>
         </div>
+        ${hStocks.length>1?`<button onclick="removeItem('hstock',${i})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif;margin-left:6px">× Hapus</button>`:''}
       </div>
       <div class="fg" style="margin-bottom:5px">
         <div class="ff"><label class="fl">Ticker</label><input class="fi" id="h-tk-${i}" value="${s.tk}" oninput="up('halftime')"></div>
@@ -1782,19 +1803,20 @@ function buildHForm(){
       <div id="h-sell-${i}" style="${s.a!=='sell'?'display:none':''}">
         <div class="fg"><div class="ff"><label class="fl">Resistance 2</label><input class="fi" id="h-r2-${i}" value="${s.r2||''}" oninput="up('halftime')"></div><div class="ff"><label class="fl">Resistance 1</label><input class="fi" id="h-r1-${i}" value="${s.r1||''}" oninput="up('halftime')"></div><div class="ff"><label class="fl">Support 1</label><input class="fi" id="h-s1-${i}" value="${s.s1||''}" oninput="up('halftime')"></div><div class="ff"><label class="fl">Support 2</label><input class="fi" id="h-s2-${i}" value="${s.s2||''}" oninput="up('halftime')"></div></div>
       </div>
-    </div>`).join('');
+    </div>`).join('') + (hStocks.length<3 ? `
+    <button onclick="addItem('hstock')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">+ Tambah Stock Pick</button>` : '');
 }
 function setHS(i,a){hStocks[i].a=a;buildHForm();up('halftime');}
 
 // ---- WRAP STATE ----
-const wPosContrib=[
+let wPosContrib=[
   {tk:'BBCA',nm:'Bank Central Asia',pts:'+12,4',pct:'+2,14%'},
   {tk:'BBRI',nm:'Bank Rakyat Indonesia',pts:'+8,7',pct:'+1,55%'},
   {tk:'TLKM',nm:'Telkom Indonesia',pts:'+5,2',pct:'+0,92%'},
   {tk:'BMRI',nm:'Bank Mandiri',pts:'+3,9',pct:'+0,70%'},
   {tk:'ASII',nm:'Astra International',pts:'+2,1',pct:'+0,38%'},
 ];
-const wNegContrib=[
+let wNegContrib=[
   {tk:'ANTM',nm:'Aneka Tambang',pts:'-6,3',pct:'-1,12%'},
   {tk:'GOTO',nm:'GoTo Gojek Tokopedia',pts:'-4,8',pct:'-0,85%'},
   {tk:'INCO',nm:'Vale Indonesia',pts:'-3,5',pct:'-0,63%'},
@@ -1813,7 +1835,9 @@ function buildWContribForm(){
         <div class="ff"><label class="fl">Kontribusi (poin)</label><input class="fi" id="wpc-pts-${i}" value="${c.pts}" oninput="up('wrap')"></div>
         <div class="ff"><label class="fl">% Perubahan</label><input class="fi" id="wpc-pct-${i}" value="${c.pct}" oninput="up('wrap')"></div>
       </div>
-    </div>`).join('');
+      ${wPosContrib.length>1?`<button onclick="removeItem('wpos',${i})" style="margin-top:6px;font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif">× Hapus</button>`:''}
+    </div>`).join('') + (wPosContrib.length<5 ? `
+    <button onclick="addItem('wpos')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">+ Tambah Kontributor Positif</button>` : '');
   const ne=document.getElementById('w-neg-contrib-form');
   ne.innerHTML=wNegContrib.map((c,i)=>`
     <div class="ca-card-form">
@@ -1825,7 +1849,9 @@ function buildWContribForm(){
         <div class="ff"><label class="fl">Kontribusi (poin)</label><input class="fi" id="wnc-pts-${i}" value="${c.pts}" oninput="up('wrap')"></div>
         <div class="ff"><label class="fl">% Perubahan</label><input class="fi" id="wnc-pct-${i}" value="${c.pct}" oninput="up('wrap')"></div>
       </div>
-    </div>`).join('');
+      ${wNegContrib.length>1?`<button onclick="removeItem('wneg',${i})" style="margin-top:6px;font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif">× Hapus</button>`:''}
+    </div>`).join('') + (wNegContrib.length<5 ? `
+    <button onclick="addItem('wneg')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">+ Tambah Kontributor Negatif</button>` : '');
 }
 
 // ---- UPDATE FUNCTIONS ----
@@ -1860,10 +1886,8 @@ function upMorning(){
     comm('CPO',ph('m-cpo'),ph('m-cpo-c')),comm('NICKEL',ph('m-ni'),ph('m-ni-c')),
   ].join('');
   // catalys
-  const cats=[v('m-cat1'),v('m-cat2'),v('m-cat3'),v('m-cat4')];
-  const defaults=['NFP AS di atas ekspektasi','Harga nikel rebound','Rupiah stabil di area 16.400','Yield US Treasury turun'];
-  document.getElementById('m-p-catalyst').innerHTML=cats
-    .map((c,i)=>c||defaults[i])
+  document.getElementById('m-p-catalyst').innerHTML=mCatalyst
+    .map((c,i)=>v(`m-cat-${i}`)||c)
     .filter(c=>c.trim()!=='')
     .map(c=>`<div class="sc-catalyst-item"><div class="sc-catalyst-dot"></div><span>${c}</span></div>`)
     .join('');
@@ -1912,13 +1936,14 @@ function upHalftime(){
   document.getElementById('h-p-fsell').textContent='Rp'+ph('h-fsell');
   const fd=v('h-fdir')||'neg',fn=ph('h-fnet');
   document.getElementById('h-p-fnet').innerHTML=`<span class="${fd==='pos'?'pos':'neg'}">${fd==='pos'?'Net Buy':'Net Sell'} Rp${fn}</span>`;
-  const mxAbs=hDrvs.reduce((_,__,i)=>Math.max(_,Math.abs(pct(v(`hdrv-c-${i}`)||hDrvs[i].c))),0)||1;
-  const posDrivers=[0,1,2].map(i=>{
-    const n=v(`hdrv-n-${i}`)||hDrvs[i].n,c=v(`hdrv-c-${i}`)||hDrvs[i].c,w=Math.round(Math.abs(pct(c))/mxAbs*100);
+  const allDrv=[...hDrvPos.map((d,i)=>v(`hdrvp-c-${i}`)||d.c), ...hDrvNeg.map((d,i)=>v(`hdrvn-c-${i}`)||d.c)];
+  const mxAbs=allDrv.reduce((m,c)=>Math.max(m,Math.abs(pct(c))),0)||1;
+  const posDrivers=hDrvPos.map((d,i)=>{
+    const n=v(`hdrvp-n-${i}`)||d.n,c=v(`hdrvp-c-${i}`)||d.c,w=Math.round(Math.abs(pct(c))/mxAbs*100);
     return `<div class="sc-drv pos"><div class="sc-drv-n">${n}</div><div class="sc-drv-bar-w"><div class="sc-drv-bar pos" style="width:${w}%"></div></div><div class="sc-drv-c pos">${arr(c)}</div></div>`;
   }).join('');
-  const negDrivers=[3,4,5].map(i=>{
-    const n=v(`hdrv-n-${i}`)||hDrvs[i].n,c=v(`hdrv-c-${i}`)||hDrvs[i].c,w=Math.round(Math.abs(pct(c))/mxAbs*100);
+  const negDrivers=hDrvNeg.map((d,i)=>{
+    const n=v(`hdrvn-n-${i}`)||d.n,c=v(`hdrvn-c-${i}`)||d.c,w=Math.round(Math.abs(pct(c))/mxAbs*100);
     return `<div class="sc-drv neg"><div class="sc-drv-n">${n}</div><div class="sc-drv-bar-w"><div class="sc-drv-bar neg" style="width:${w}%"></div></div><div class="sc-drv-c neg">${arr(c)}</div></div>`;
   }).join('');
   document.getElementById('h-p-drivers').innerHTML=`
@@ -2050,7 +2075,10 @@ function buildWKForms(){
     const el=document.getElementById(FORM_IDS[ci]);
     el.innerHTML=cat.map((rd,ri)=>`
       <div class="ca-card-form" style="margin-bottom:6px">
-        <div style="font-size:10px;font-weight:700;color:var(--t2);margin-bottom:6px">#${ri+1}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:10px;font-weight:700;color:var(--t2)">#${ri+1}</span>
+          ${cat.length>1?`<button onclick="removeWKItem(${ci},${ri})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif">× Hapus</button>`:''}
+        </div>
         <div class="fg" style="margin-bottom:4px">
           <div class="ff" style="grid-column:1/-1"><label class="fl">Nama Reksa Dana</label><input class="fi" id="wkrd-${ci}-${ri}-name" value="${rd.name}" oninput="up('weekly')"></div>
         </div>
@@ -2059,8 +2087,29 @@ function buildWKForms(){
           <div class="ff"><label class="fl">AUM</label><input class="fi" id="wkrd-${ci}-${ri}-aum" value="${rd.aum}" oninput="up('weekly')"></div>
           <div class="ff"><label class="fl">1 Yr Return (%)</label><input class="fi" id="wkrd-${ci}-${ri}-ret" value="${rd.ret}" oninput="up('weekly')"></div>
         </div>
-      </div>`).join('');
+      </div>`).join('') + (cat.length<5 ? `
+    <button onclick="addWKItem(${ci})" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:10px">+ Tambah Reksa Dana</button>` : '');
   });
+}
+function syncWKFromDOM(ci){
+  WK_DEFAULTS[ci]=WK_DEFAULTS[ci].map((rd,ri)=>({
+    name:v(`wkrd-${ci}-${ri}-name`)||'', nav:v(`wkrd-${ci}-${ri}-nav`)||'',
+    aum:v(`wkrd-${ci}-${ri}-aum`)||'', ret:v(`wkrd-${ci}-${ri}-ret`)||''
+  }));
+}
+function addWKItem(ci){
+  syncWKFromDOM(ci);
+  if(WK_DEFAULTS[ci].length>=5) return;
+  WK_DEFAULTS[ci].push({name:'',nav:'',aum:'',ret:''});
+  buildWKForms();
+  up('weekly');
+}
+function removeWKItem(ci,ri){
+  syncWKFromDOM(ci);
+  if(WK_DEFAULTS[ci].length<=1) return;
+  WK_DEFAULTS[ci].splice(ri,1);
+  buildWKForms();
+  up('weekly');
 }
 
 function upWeekly(){
@@ -2073,7 +2122,7 @@ function upWeekly(){
     const listEl=document.getElementById(`wk-p${ci+1}-list`);
     if(!listEl)continue;
     listEl.innerHTML='';
-    for(let ri=0;ri<5;ri++){
+    for(let ri=0;ri<WK_DEFAULTS[ci].length;ri++){
       const def=WK_DEFAULTS[ci][ri];
       const nm=v(`wkrd-${ci}-${ri}-name`)||def.name;
       const nav=v(`wkrd-${ci}-${ri}-nav`)||def.nav;
@@ -2115,7 +2164,10 @@ function buildBPForms(){
     const el=document.getElementById(`bp-${type}-form`);
     el.innerHTML=BP_DEFAULTS[type].map((b,i)=>`
       <div class="ca-card-form" style="margin-bottom:6px">
-        <div style="font-size:10px;font-weight:700;color:var(--t2);margin-bottom:6px">#${i+1}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:10px;font-weight:700;color:var(--t2)">#${i+1}</span>
+          ${BP_DEFAULTS[type].length>1?`<button onclick="removeBPItem('${type}',${i})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif">× Hapus</button>`:''}
+        </div>
         <div class="fg" style="margin-bottom:4px">
           <div class="ff"><label class="fl">Seri Obligasi</label><input class="fi" id="bp-${type}-${i}-seri" value="${b.seri}" oninput="up('bondpicks')"></div>
           <div class="ff"><label class="fl">Yield (%)</label><input class="fi" id="bp-${type}-${i}-yield" value="${b.yield}" oninput="up('bondpicks')"></div>
@@ -2136,8 +2188,31 @@ function buildBPForms(){
           <div class="ff"><label class="fl">Maturity (tahun)</label><input class="fi" id="bp-${type}-${i}-jatuh" value="${b.jatuh}" oninput="up('bondpicks')"></div>
           <div class="ff"><label class="fl">Rating</label><input class="fi" id="bp-${type}-${i}-rating" value="${b.rating}" oninput="up('bondpicks')"></div>
         </div>
-      </div>`).join('');
+      </div>`).join('') + (BP_DEFAULTS[type].length<4 ? `
+    <button onclick="addBPItem('${type}')" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:10px">+ Tambah Obligasi</button>` : '');
   });
+}
+function syncBPFromDOM(type){
+  BP_DEFAULTS[type]=BP_DEFAULTS[type].map((b,i)=>({
+    seri:v(`bp-${type}-${i}-seri`)||'', jatuh:v(`bp-${type}-${i}-jatuh`)||'',
+    price:v(`bp-${type}-${i}-price`)||'', coupon:v(`bp-${type}-${i}-coupon`)||'',
+    rating:v(`bp-${type}-${i}-rating`)||'', yield:v(`bp-${type}-${i}-yield`)||'',
+    badge:document.getElementById(`bp-${type}-${i}-badge`)?.value||''
+  }));
+}
+function addBPItem(type){
+  syncBPFromDOM(type);
+  if(BP_DEFAULTS[type].length>=4) return;
+  BP_DEFAULTS[type].push({seri:'',jatuh:'',price:'',coupon:'',rating:'',yield:'',badge:''});
+  buildBPForms();
+  up('bondpicks');
+}
+function removeBPItem(type,idx){
+  syncBPFromDOM(type);
+  if(BP_DEFAULTS[type].length<=1) return;
+  BP_DEFAULTS[type].splice(idx,1);
+  buildBPForms();
+  up('bondpicks');
 }
 
 function renderBondList(type){
@@ -2197,9 +2272,19 @@ const ITEM_DEFAULTS = {
   ca:  {tk:'',type:'Cash Dividen',date:'Cum.Date',dateClass:'cum'},
   rups:{tk:'',type:'RUPS',time:''},
   ipo: {tk:'',type:'IPO',badge:''},
+  cat: '',
+  mstock:{a:'buy',tk:'',sec:'',rsn:'',t2:'',t1:'',entry:'',sl:''},
+  news:{tk:'',txt:'',src:''},
+  hstock:{a:'buy',tk:'',sec:'',rsn:'',t2:'',t1:'',entry:'',sl:''},
+  hdrvpos:{n:'',c:''},
+  hdrvneg:{n:'',c:''},
+  wpos:{tk:'',nm:'',pts:'',pct:''},
+  wneg:{tk:'',nm:'',pts:'',pct:''},
 };
-const ITEM_ARRAYS = {ca:'mCA', rups:'mRUPS', ipo:'mIPO'};
-const ITEM_BUILDERS = {ca:'buildMCAForm', rups:'buildMRUPSForm', ipo:'buildMIPOForm'};
+const ITEM_MAX = {ca:6, rups:6, ipo:6, cat:4, mstock:3, news:5, hstock:3, hdrvpos:3, hdrvneg:3, wpos:5, wneg:5};
+const ITEM_ARRAYS = {ca:'mCA', rups:'mRUPS', ipo:'mIPO', cat:'mCatalyst', mstock:'mStocks', news:'mNews', hstock:'hStocks', hdrvpos:'hDrvPos', hdrvneg:'hDrvNeg', wpos:'wPosContrib', wneg:'wNegContrib'};
+const ITEM_BUILDERS = {ca:'buildMCAForm', rups:'buildMRUPSForm', ipo:'buildMIPOForm', cat:'buildMCatalystForm', mstock:'buildMStockForm', news:'buildMNewsForm', hstock:'buildHForm', hdrvpos:'buildHForm', hdrvneg:'buildHForm', wpos:'buildWContribForm', wneg:'buildWContribForm'};
+const ITEM_TAB = {ca:'morning', rups:'morning', ipo:'morning', cat:'morning', mstock:'morning', news:'morning', hstock:'halftime', hdrvpos:'halftime', hdrvneg:'halftime', wpos:'wrap', wneg:'wrap'};
 
 function syncFromDOM(type){
   if(type==='ca'){
@@ -2215,31 +2300,71 @@ function syncFromDOM(type){
     mIPO=mIPO.map((_,i)=>({
       tk:v(`mipo-tk-${i}`)||'', type:'IPO', badge:v(`mipo-badge-${i}`)||''
     }));
+  } else if(type==='cat'){
+    mCatalyst=mCatalyst.map((_,i)=>v(`m-cat-${i}`)||'');
+  } else if(type==='mstock'){
+    mStocks=mStocks.map((s,i)=>({
+      a:s.a, tk:v(`m-tk-${i}`)||'', sec:v(`m-sec-${i}`)||'', rsn:v(`m-rsn-${i}`)||'',
+      t2:v(`m-t2-${i}`)||'', t1:v(`m-t1-${i}`)||'', entry:v(`m-en-${i}`)||'', sl:v(`m-sl-${i}`)||'',
+      r2:v(`m-r2-${i}`)||'', r1:v(`m-r1-${i}`)||'', s1:v(`m-s1-${i}`)||'', s2:v(`m-s2-${i}`)||''
+    }));
+  } else if(type==='news'){
+    mNews=mNews.map((_,i)=>({
+      tk:v(`mn-tk-${i}`)||'', txt:v(`mn-txt-${i}`)||'', src:v(`mn-src-${i}`)||''
+    }));
+  } else if(type==='hstock'){
+    hStocks=hStocks.map((s,i)=>({
+      a:s.a, tk:v(`h-tk-${i}`)||'', sec:v(`h-sec-${i}`)||'', rsn:v(`h-rsn-${i}`)||'',
+      t2:v(`h-t2-${i}`)||'', t1:v(`h-t1-${i}`)||'', entry:v(`h-en-${i}`)||'', sl:v(`h-sl-${i}`)||'',
+      r2:v(`h-r2-${i}`)||'', r1:v(`h-r1-${i}`)||'', s1:v(`h-s1-${i}`)||'', s2:v(`h-s2-${i}`)||''
+    }));
+  } else if(type==='hdrvpos'){
+    hDrvPos=hDrvPos.map((_,i)=>({n:v(`hdrvp-n-${i}`)||'', c:v(`hdrvp-c-${i}`)||''}));
+  } else if(type==='hdrvneg'){
+    hDrvNeg=hDrvNeg.map((_,i)=>({n:v(`hdrvn-n-${i}`)||'', c:v(`hdrvn-c-${i}`)||''}));
+  } else if(type==='wpos'){
+    wPosContrib=wPosContrib.map((_,i)=>({tk:v(`wpc-tk-${i}`)||'', nm:v(`wpc-nm-${i}`)||'', pts:v(`wpc-pts-${i}`)||'', pct:v(`wpc-pct-${i}`)||''}));
+  } else if(type==='wneg'){
+    wNegContrib=wNegContrib.map((_,i)=>({tk:v(`wnc-tk-${i}`)||'', nm:v(`wnc-nm-${i}`)||'', pts:v(`wnc-pts-${i}`)||'', pct:v(`wnc-pct-${i}`)||''}));
   }
+}
+
+function getItemArr(type){
+  if(type==='ca') return mCA;
+  if(type==='rups') return mRUPS;
+  if(type==='ipo') return mIPO;
+  if(type==='cat') return mCatalyst;
+  if(type==='mstock') return mStocks;
+  if(type==='news') return mNews;
+  if(type==='hstock') return hStocks;
+  if(type==='hdrvpos') return hDrvPos;
+  if(type==='hdrvneg') return hDrvNeg;
+  if(type==='wpos') return wPosContrib;
+  if(type==='wneg') return wNegContrib;
 }
 
 function addItem(type){
   syncFromDOM(type);
-  if(type==='ca') mCA.push({...ITEM_DEFAULTS.ca});
-  else if(type==='rups') mRUPS.push({...ITEM_DEFAULTS.rups});
-  else if(type==='ipo') mIPO.push({...ITEM_DEFAULTS.ipo});
+  const arr=getItemArr(type);
+  if(arr.length>=ITEM_MAX[type]) return;
+  const def=ITEM_DEFAULTS[type];
+  arr.push(typeof def==='object' ? {...def} : def);
   window[ITEM_BUILDERS[type]]();
-  up('morning');
+  up(ITEM_TAB[type]);
 }
 
 function removeItem(type,idx){
   syncFromDOM(type);
-  if(type==='ca') mCA.splice(idx,1);
-  else if(type==='rups') mRUPS.splice(idx,1);
-  else if(type==='ipo') mIPO.splice(idx,1);
+  const arr=getItemArr(type);
+  arr.splice(idx,1);
   window[ITEM_BUILDERS[type]]();
-  up('morning');
+  up(ITEM_TAB[type]);
 }
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('m-date').value=TODAY;
   document.getElementById('h-date').value=TODAY;
   document.getElementById('w-date').value=TODAY;
-  buildMStockForm();buildMCAForm();buildMRUPSForm();buildMIPOForm();buildMNewsForm();
+  buildMCatalystForm();buildMStockForm();buildMCAForm();buildMRUPSForm();buildMIPOForm();buildMNewsForm();
   buildHForm();buildWContribForm();
   buildWKForms();
   ['ca','rups','ipo'].forEach(id=>{
