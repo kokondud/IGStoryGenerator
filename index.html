@@ -602,6 +602,12 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
     <div class="ff"><label class="fl">Nickel %</label><input class="fi" id="m-ni-c" placeholder="+2,17" oninput="up('morning')"></div>
   </div>
 
+  <div style="margin-top:6px">
+    <button type="button" class="btn-sec" id="btn-fetch-mkt" onclick="fetchMarketData()" style="width:100%;background:var(--blue-dim);border-color:rgba(37,99,235,0.3);color:var(--blue);font-weight:700">🔄 Fetch Otomatis (Yahoo Finance)</button>
+    <div id="fetch-mkt-status" style="font-size:10px;margin-top:5px;line-height:1.4"></div>
+    <div style="font-size:9px;color:var(--t3);margin-top:3px;line-height:1.4">Otomatis isi: IHSG, DJIA, NASDAQ, S&amp;P 500, Nikkei, HSI, IDR/USD, Crude Oil, Gold. Tin / Coal / CPO / Nickel tetap manual — tidak tersedia di Yahoo Finance.</div>
+  </div>
+
   <div class="fst">Market Takeaway</div>
   <div class="ff"><label class="fl">Narasi</label><textarea class="fi" id="m-tw" placeholder="Wall Street menguat..." oninput="up('morning')"></textarea></div>
 
@@ -2255,6 +2261,92 @@ function upBondPicks(){
   });
   const l1=document.getElementById('bp-p1-list');if(l1)l1.innerHTML=renderBondList('gov');
   const l2=document.getElementById('bp-p2-list');if(l2)l2.innerHTML=renderBondList('corp');
+}
+
+/* ===== YAHOO FINANCE AUTO-FETCH ===== */
+const YAHOO_SYMBOLS = {
+  ihsg:'^JKSE', djia:'^DJI', ndq:'^IXIC', sp:'^GSPC',
+  nk:'^N225', hsi:'^HSI', idr:'IDR=X', oil:'CL=F', gold:'GC=F'
+};
+// Beberapa proxy CORS publik dicoba berurutan — kalau satu down/rate-limited, lanjut ke berikutnya.
+const CORS_PROXIES = [
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`
+];
+
+async function fetchYahooQuote(symbol){
+  const target = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+  let lastErr;
+  for(const wrap of CORS_PROXIES){
+    try{
+      const res = await fetch(wrap(target));
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      const meta = data?.chart?.result?.[0]?.meta;
+      if(!meta) throw new Error('No data');
+      const price = meta.regularMarketPrice;
+      const prevClose = meta.previousClose ?? meta.chartPreviousClose;
+      if(price==null || prevClose==null) throw new Error('Incomplete data');
+      const changePct = ((price - prevClose) / prevClose) * 100;
+      return {price, changePct};
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('Fetch failed');
+}
+
+function fmtMktNum(n, decimals){
+  return n.toLocaleString('id-ID', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
+}
+function fmtMktChg(n){
+  const s = Math.abs(n).toFixed(2).replace('.', ',');
+  return (n>=0?'+':'-') + s;
+}
+
+async function fetchMarketData(){
+  const btn = document.getElementById('btn-fetch-mkt');
+  const status = document.getElementById('fetch-mkt-status');
+  const origLabel = btn.textContent;
+  btn.disabled = true; btn.textContent = '⏳ Mengambil data...';
+  status.textContent = '';
+
+  const fields = [
+    {sym:'ihsg', val:'m-iv',   chg:'m-ic',      dec:2, label:'IHSG'},
+    {sym:'djia', val:'m-djia', chg:'m-djia-c',  dec:0, label:'DJIA'},
+    {sym:'ndq',  val:'m-ndq',  chg:'m-ndq-c',   dec:0, label:'NASDAQ'},
+    {sym:'sp',   val:'m-sp',   chg:'m-sp-c',    dec:0, label:'S&P 500'},
+    {sym:'nk',   val:'m-nk',   chg:'m-nk-c',    dec:0, label:'Nikkei'},
+    {sym:'hsi',  val:'m-hsi',  chg:'m-hsi-c',   dec:0, label:'HSI'},
+    {sym:'idr',  val:'m-idr',  chg:'m-idr-c',   dec:0, label:'IDR/USD'},
+    {sym:'oil',  val:'m-oil',  chg:'m-oil-c',   dec:1, label:'Crude Oil'},
+    {sym:'gold', val:'m-gold', chg:'m-gold-c',  dec:0, label:'Gold'},
+  ];
+
+  let okCount=0, failList=[];
+  // sequential biar gak diblokir rate-limit proxy publik
+  for(const f of fields){
+    try{
+      const {price, changePct} = await fetchYahooQuote(YAHOO_SYMBOLS[f.sym]);
+      document.getElementById(f.val).value = fmtMktNum(price, f.dec);
+      document.getElementById(f.chg).value = fmtMktChg(changePct);
+      okCount++;
+    }catch(e){
+      failList.push(f.label);
+    }
+  }
+
+  up('morning');
+  btn.disabled = false; btn.textContent = origLabel;
+
+  if(failList.length===0){
+    status.style.color = 'var(--green)';
+    status.textContent = `✓ ${okCount} data berhasil diambil dari Yahoo Finance.`;
+  } else if(okCount===0){
+    status.style.color = 'var(--red)';
+    status.textContent = `✗ Gagal ambil data (proxy CORS mungkin lagi down). Isi manual dulu.`;
+  } else {
+    status.style.color = 'var(--amber)';
+    status.textContent = `⚠ ${okCount} berhasil, gagal: ${failList.join(', ')}.`;
+  }
 }
 
 function toggleSection(id){
