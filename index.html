@@ -2268,11 +2268,28 @@ const YAHOO_SYMBOLS = {
   ihsg:'^JKSE', djia:'^DJI', ndq:'^IXIC', sp:'^GSPC',
   nk:'^N225', hsi:'^HSI', idr:'IDR=X', oil:'CL=F', gold:'GC=F'
 };
-// Beberapa proxy CORS publik dicoba berurutan — kalau satu down/rate-limited, lanjut ke berikutnya.
+// Sumber utama: Cloudflare Worker (1 request, ambil semua simbol paralel).
+const WORKER_URL = 'https://kisi-yahoo-proxy.kho-xaverius.workers.dev/';
+// Fallback kalau worker gagal/down: proxy CORS publik, sequential per-simbol.
 const CORS_PROXIES = [
   u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
   u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`
 ];
+
+// Ambil semua simbol sekaligus lewat Worker. Return: { symbol: {price, changePct} }
+async function fetchViaWorker(symbols){
+  const url = `${WORKER_URL}?symbols=${encodeURIComponent(symbols.join(','))}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('Worker HTTP '+res.status);
+  const data = await res.json();
+  const out = {};
+  for(const sym of symbols){
+    const d = data[sym];
+    if(!d || d.error || d.price==null || d.prevClose==null) continue;
+    out[sym] = { price: d.price, changePct: ((d.price - d.prevClose) / d.prevClose) * 100 };
+  }
+  return out;
+}
 
 async function fetchYahooQuote(symbol){
   const target = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
@@ -2321,16 +2338,35 @@ async function fetchMarketData(){
     {sym:'gold', val:'m-gold', chg:'m-gold-c',  dec:0, label:'Gold'},
   ];
 
-  let okCount=0, failList=[];
-  // sequential biar gak diblokir rate-limit proxy publik
-  for(const f of fields){
-    try{
-      const {price, changePct} = await fetchYahooQuote(YAHOO_SYMBOLS[f.sym]);
-      document.getElementById(f.val).value = fmtMktNum(price, f.dec);
-      document.getElementById(f.chg).value = fmtMktChg(changePct);
-      okCount++;
-    }catch(e){
-      failList.push(f.label);
+  let okCount=0, failList=[], usedFallback=false;
+  const allSymbols = fields.map(f => YAHOO_SYMBOLS[f.sym]);
+
+  try{
+    // Jalur cepat: 1 request ke Worker, semua simbol paralel di server.
+    const results = await fetchViaWorker(allSymbols);
+    for(const f of fields){
+      const r = results[YAHOO_SYMBOLS[f.sym]];
+      if(r){
+        document.getElementById(f.val).value = fmtMktNum(r.price, f.dec);
+        document.getElementById(f.chg).value = fmtMktChg(r.changePct);
+        okCount++;
+      } else {
+        failList.push(f.label);
+      }
+    }
+  }catch(workerErr){
+    // Worker gagal total (down/network) -> fallback proxy publik, sequential.
+    usedFallback = true;
+    failList = [];
+    for(const f of fields){
+      try{
+        const {price, changePct} = await fetchYahooQuote(YAHOO_SYMBOLS[f.sym]);
+        document.getElementById(f.val).value = fmtMktNum(price, f.dec);
+        document.getElementById(f.chg).value = fmtMktChg(changePct);
+        okCount++;
+      }catch(e){
+        failList.push(f.label);
+      }
     }
   }
 
@@ -2339,13 +2375,15 @@ async function fetchMarketData(){
 
   if(failList.length===0){
     status.style.color = 'var(--green)';
-    status.textContent = `✓ ${okCount} data berhasil diambil dari Yahoo Finance.`;
+    status.textContent = usedFallback
+      ? `✓ ${okCount} data berhasil (worker down, pakai fallback proxy).`
+      : `✓ ${okCount} data berhasil diambil (via Worker).`;
   } else if(okCount===0){
     status.style.color = 'var(--red)';
-    status.textContent = `✗ Gagal ambil data (proxy CORS mungkin lagi down). Isi manual dulu.`;
+    status.textContent = `✗ Gagal ambil data (worker & fallback proxy sama-sama gagal). Isi manual dulu.`;
   } else {
     status.style.color = 'var(--amber)';
-    status.textContent = `⚠ ${okCount} berhasil, gagal: ${failList.join(', ')}.`;
+    status.textContent = `⚠ ${okCount} berhasil${usedFallback?' (fallback proxy)':' (via Worker)'}, gagal: ${failList.join(', ')}.`;
   }
 }
 
