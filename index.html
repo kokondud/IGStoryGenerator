@@ -2080,6 +2080,11 @@ async function dlPNG(pfx,page){
   const entry=canvasMap[pfx][page-1];
   const el=document.getElementById(entry[0]);
   if(!el)return;
+  // Pastikan font (Inter/DM Mono) sudah fully loaded sebelum capture —
+  // penting saat halaman baru dibuka (belum ada font cache), misal dari GitHub Pages.
+  if(document.fonts && document.fonts.ready){
+    try{ await document.fonts.ready; }catch(e){}
+  }
   const dateId=pfx==='m'?'m-date':pfx==='h'?'h-date':'w-date';
   const dv=v(dateId);const ds=dv?dv.replace(/-/g,''):TODAY.replace(/-/g,'');
   const result=await html2canvas(el,{scale:3,useCORS:true,backgroundColor:'#f7f9fb',logging:false,allowTaint:true});
