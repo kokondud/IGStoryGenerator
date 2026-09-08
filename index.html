@@ -2070,7 +2070,7 @@ async function dlPNG(pfx,page){
   }
   const dateId=pfx==='m'?'m-date':pfx==='h'?'h-date':'w-date';
   const dv=v(dateId);const ds=dv?dv.replace(/-/g,''):TODAY.replace(/-/g,'');
-  const result=await html2canvas(el,{scale:3,useCORS:true,backgroundColor:'#f7f9fb',logging:false,allowTaint:true});
+  const result=await html2canvas(el,{scale:3,useCORS:true,backgroundColor:'#f7f9fb',logging:false,allowTaint:true,width:360,height:640,windowWidth:360,windowHeight:640});
   const a=document.createElement('a');a.download=`KISI-${entry[1]}-${ds}.png`;a.href=result.toDataURL('image/png');a.click();
 }
 async function dlAll(pfx,n){
