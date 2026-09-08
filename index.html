@@ -351,7 +351,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
 .sc-wk-catname{font-size:13px;font-weight:600;color:rgba(255,255,255,0.7)}
 
 /* RD CARDS */
-.sc-rd-list{display:flex;flex-direction:column;gap:5px;flex:1;position:relative}
+.sc-rd-list{display:flex;flex-direction:column;gap:5px;flex:1;position:relative;justify-content:center}
 .sc-rd{
   background:rgba(255,255,255,0.04);
   border:1px solid rgba(255,255,255,0.08);
@@ -379,12 +379,13 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
 .sc-rd-name{font-size:11px;font-weight:700;color:#fff;line-height:1.25;margin-bottom:3px}
 .sc-rd-meta{font-size:8px;color:rgba(255,255,255,0.45);line-height:1.3}
 .sc-rd-return{
-  font-size:22px;font-weight:900;
-  background: linear-gradient(180deg, #86efac, #22c55e);
-  text-shadow: 0 0 10px rgba(34,197,94,0.35);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing:-0.5px;
+  font-size:20px;font-weight:900;
+  color:#fff;
+  background: linear-gradient(180deg, #4ade80, #16a34a);
+  padding:5px 10px;
+  border-radius:7px;
+  letter-spacing:-0.3px;
+  display:inline-block;
 }
 /* rank accent colors */
 .sc-rd:nth-child(1){
@@ -611,9 +612,9 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
   </div>
 
   <div style="margin-top:6px">
-    <button type="button" class="btn-sec" id="btn-fetch-mkt" onclick="fetchMarketData()" style="width:100%;background:var(--blue-dim);border-color:rgba(37,99,235,0.3);color:var(--blue);font-weight:700">🔄 Fetch Otomatis</button>
+    <button type="button" class="btn-sec" id="btn-fetch-mkt" onclick="fetchMarketData()" style="width:100%;background:var(--blue-dim);border-color:rgba(37,99,235,0.3);color:var(--blue);font-weight:700">🔄 Fetch Otomatis (Yahoo Finance)</button>
     <div id="fetch-mkt-status" style="font-size:10px;margin-top:5px;line-height:1.4"></div>
-    <div style="font-size:9px;color:var(--t3);margin-top:3px;line-height:1.4">Otomatis isi: IHSG, DJIA, NASDAQ, S&amp;P 500, Nikkei, HSI, IDR/USD, Crude Oil, Gold, Tin, Coal, CPO (FCPO Malaysia), Nickel.</div>
+    <div style="font-size:9px;color:var(--t3);margin-top:3px;line-height:1.4">Otomatis isi: IHSG, DJIA, NASDAQ, S&amp;P 500, Nikkei, HSI, IDR/USD, Crude Oil, Gold. Tin / Coal / CPO / Nickel tetap manual — tidak tersedia di Yahoo Finance.</div>
   </div>
 
   <div class="fst">Market Takeaway</div>
@@ -2398,10 +2399,6 @@ async function fetchMarketData(){
     {sym:'idr',  val:'m-idr',  chg:'m-idr-c',   dec:0, label:'IDR/USD'},
     {sym:'oil',  val:'m-oil',  chg:'m-oil-c',   dec:1, label:'Crude Oil'},
     {sym:'gold', val:'m-gold', chg:'m-gold-c',  dec:0, label:'Gold'},
-    {sym:'tin',  val:'m-tin',  chg:'m-tin-c',  dec:0, label:'Tin'},
-    {sym:'coal', val:'m-coal', chg:'m-coal-c', dec:1, label:'Coal'},
-    {sym:'cpo',  val:'m-cpo',  chg:'m-cpo-c',  dec:0, label:'CPO'},
-    {sym:'ni',   val:'m-ni',   chg:'m-ni-c',   dec:0, label:'Nickel'},
   ];
 
   let okCount=0, failList=[], usedFallback=false;
@@ -2409,32 +2406,30 @@ async function fetchMarketData(){
 
   try{
     // Jalur cepat: 1 request ke Worker, semua simbol paralel di server.
-    const workerSymbols = [
-      ...fields.slice(0,9).map(f => YAHOO_SYMBOLS[f.sym]),
-      'TIN_BI','COAL_BI','FCPO_MY','NICKEL_BI'
-    ];
-    const results = await fetchViaWorker(workerSymbols);
-    const sourceKey = {ihsg:YAHOO_SYMBOLS.ihsg,djia:YAHOO_SYMBOLS.djia,ndq:YAHOO_SYMBOLS.ndq,sp:YAHOO_SYMBOLS.sp,nk:YAHOO_SYMBOLS.nk,hsi:YAHOO_SYMBOLS.hsi,idr:YAHOO_SYMBOLS.idr,oil:YAHOO_SYMBOLS.oil,gold:YAHOO_SYMBOLS.gold,tin:'TIN_BI',coal:'COAL_BI',cpo:'FCPO_MY',ni:'NICKEL_BI'};
+    const results = await fetchViaWorker(allSymbols);
     for(const f of fields){
-      const r = results[sourceKey[f.sym]];
+      const r = results[YAHOO_SYMBOLS[f.sym]];
       if(r){
         document.getElementById(f.val).value = fmtMktNum(r.price, f.dec);
         document.getElementById(f.chg).value = fmtMktChg(r.changePct);
         okCount++;
-      } else failList.push(f.label);
+      } else {
+        failList.push(f.label);
+      }
     }
   }catch(workerErr){
     // Worker gagal total (down/network) -> fallback proxy publik, sequential.
     usedFallback = true;
     failList = [];
     for(const f of fields){
-      if(!YAHOO_SYMBOLS[f.sym]){ failList.push(f.label); continue; }
       try{
         const {price, changePct} = await fetchYahooQuote(YAHOO_SYMBOLS[f.sym]);
         document.getElementById(f.val).value = fmtMktNum(price, f.dec);
         document.getElementById(f.chg).value = fmtMktChg(changePct);
         okCount++;
-      }catch(e){ failList.push(f.label); }
+      }catch(e){
+        failList.push(f.label);
+      }
     }
   }
 
@@ -2444,11 +2439,11 @@ async function fetchMarketData(){
   if(failList.length===0){
     status.style.color = 'var(--green)';
     status.textContent = usedFallback
-      ? `✓ ${okCount} data berhasil (Yahoo fallback; komoditas publik membutuhkan Worker).`
+      ? `✓ ${okCount} data berhasil (worker down, pakai fallback proxy).`
       : `✓ ${okCount} data berhasil diambil (via Worker).`;
   } else if(okCount===0){
     status.style.color = 'var(--red)';
-    status.textContent = `✗ Gagal ambil data dari Worker/fallback. Isi manual dulu.`;
+    status.textContent = `✗ Gagal ambil data (worker & fallback proxy sama-sama gagal). Isi manual dulu.`;
   } else {
     status.style.color = 'var(--amber)';
     status.textContent = `⚠ ${okCount} berhasil${usedFallback?' (fallback proxy)':' (via Worker)'}, gagal: ${failList.join(', ')}.`;
