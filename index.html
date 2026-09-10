@@ -745,22 +745,54 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
 </div>
 
 <div class="gen-sec" id="form-weekly">
+  <div class="fst">KISI Product Universe</div>
+  <div style="font-size:11px;line-height:1.5;color:var(--t2);background:var(--green-dim);border:1px solid rgba(22,163,74,.2);padding:9px 10px;border-radius:7px;margin-bottom:9px">Ranking <b>hanya</b> menggunakan produk yang KISI jual. Master dari file <b>list RD iKISI.xlsx</b>: <b>86 produk</b>. Data Bareksa hanya dipakai untuk mengisi data produk yang sudah masuk universe KISI.</div>
+  <div class="fst">Bareksa Data Source</div>
+  <div class="fg">
+    <div class="ff" style="grid-column:1/-1"><label class="fl">Bareksa URL (tidak digunakan lagi)</label><input class="fi" id="wk-source-url" value="" placeholder="Tidak perlu diisi — proxy mengambil halaman produk individual Bareksa"></div>
+  </div>
+  <div class="fg">
+    <div class="ff" style="grid-column:1/-1"><label class="fl">Cloudflare Worker Proxy (WAJIB)</label><input class="fi" id="wk-proxy-url" value="" placeholder="https://NAMA-WORKER.SUBDOMAIN.workers.dev"></div>
+  </div>
+  <div class="fg3">
+    <div class="ff"><label class="fl">Ranking Metric</label><select class="fi" id="wk-metric" onchange="applyWKRanking()">
+      <option value="return1Y">Best Return 1Y</option>
+      <option value="return1M">Best Return 1M</option>
+      <option value="return3M">Best Return 3M</option>
+      <option value="aumGrowth1M">Best AUM Growth 1M</option>
+      <option value="aum">Best AUM</option>
+    </select></div>
+    <div class="ff"><label class="fl">Jumlah Produk / Kategori</label><select class="fi" id="wk-topn" onchange="applyWKRanking()"><option value="1">1</option><option value="3">3</option><option value="5" selected>5</option></select></div>
+    <div class="ff"><label class="fl">Filter Kategori</label><select class="fi" id="wk-category-filter" onchange="applyWKRanking()"><option value="all">Semua</option><option value="Konvensional">Konvensional</option><option value="Syariah">Syariah</option></select></div>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">
+    <button class="btn-dl-sm" id="wk-fetch-btn" onclick="fetchBareksaData()" style="flex:1;min-width:150px">↻ Fetch Bareksa</button>
+    <button class="btn-dl-sm" onclick="applyWKRanking()" style="flex:1;min-width:150px">⚡ Apply Ranking</button>
+    <button class="btn-sec" onclick="clearWKData()" style="flex:1;min-width:150px">Reset Data</button>
+  </div>
+  <div id="wk-fetch-status" style="font-size:10px;line-height:1.45;padding:8px 10px;border-radius:7px;background:var(--inp);border:1px solid var(--inp-b);color:var(--t2);margin-bottom:10px">Belum mengambil data Bareksa.</div>
+
+  <div class="fst">Historical AUM — untuk Best AUM Growth 1M</div>
+  <div class="fg">
+    <div class="ff"><label class="fl">Upload CSV / JSON</label><input class="fi" type="file" id="wk-aum-file" accept=".csv,.json,.txt,text/csv,application/json"></div>
+    <div class="ff"><label class="fl">Historical AUM URL (opsional)</label><input class="fi" id="wk-aum-url" placeholder="URL CSV/JSON Bareksa AUM"></div>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px">
+    <button class="btn-dl-sm" onclick="loadWKAUMHistory()" style="flex:1">↻ Load Historical AUM</button>
+    <button class="btn-sec" onclick="clearWKAUMHistory()" style="flex:1">Reset AUM History</button>
+  </div>
+
   <div class="fst">Tanggal & Periode Data</div>
   <div class="fg">
     <div class="ff"><label class="fl">Tanggal Terbit</label><input type="date" class="fi" id="wk-date" oninput="up('weekly')"></div>
-    <div class="ff"><label class="fl">Keterangan Data (NAV)</label><input class="fi" id="wk-nav-note" placeholder="Data NAV 24 April 2026" oninput="up('weekly')"></div>
+    <div class="ff"><label class="fl">Keterangan Data</label><input class="fi" id="wk-nav-note" placeholder="Otomatis dari sumber data" oninput="up('weekly')"></div>
   </div>
 
-  <div class="fst">Page 1 — Pasar Uang (1–5 reksa dana)</div>
-  <div id="wk-pu-form"></div>
-  <div class="fst">Page 2 — Pendapatan Tetap (1–5 reksa dana)</div>
-  <div id="wk-pt-form"></div>
-  <div class="fst">Page 3 — Campuran (1–5 reksa dana)</div>
-  <div id="wk-cp-form"></div>
-  <div class="fst">Page 4 — Saham (1–5 reksa dana)</div>
-  <div id="wk-sh-form"></div>
-  <div class="fst">Page 5 — Indeks (1–5 reksa dana)</div>
-  <div id="wk-id-form"></div>
+  <div class="fst">Page 1 — Pasar Uang</div><div id="wk-pu-form"></div>
+  <div class="fst">Page 2 — Pendapatan Tetap</div><div id="wk-pt-form"></div>
+  <div class="fst">Page 3 — Campuran</div><div id="wk-cp-form"></div>
+  <div class="fst">Page 4 — Saham</div><div id="wk-sh-form"></div>
+  <div class="fst">Page 5 — Indeks & ETF</div><div id="wk-id-form"></div>
 
   <div class="dl-grp">
     <button class="btn-dl-sm" id="dlbtn-wk-1" onclick="dlPNG('wk',1)">⬇ P1 Pasar Uang</button>
@@ -768,7 +800,7 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
     <button class="btn-dl-sm" id="dlbtn-wk-3" onclick="dlPNG('wk',3)">⬇ P3 Campuran</button>
     <button class="btn-dl-sm" id="dlbtn-wk-4" onclick="dlPNG('wk',4)">⬇ P4 Saham</button>
   </div>
-  <div style="margin-top:6px"><button class="btn-dl-sm" id="dlbtn-wk-5" style="width:100%" onclick="dlPNG('wk',5)">⬇ P5 Indeks</button></div>
+  <div style="margin-top:6px"><button class="btn-dl-sm" id="dlbtn-wk-5" style="width:100%" onclick="dlPNG('wk',5)">⬇ P5 Indeks & ETF</button></div>
   <button class="btn-dl-all" onclick="dlAll('wk',5)">⬇ Download Semua 5 Page</button>
   <button class="btn-sec" onclick="up('weekly')">↺ Refresh Preview</button>
 </div>
@@ -2082,121 +2114,87 @@ async function dlAll(pfx,n){
 
 // ---- INIT ----
 
-// ===== WEEKLY UPDATE =====
-const WK_CATS = ['Pasar Uang','Pendapatan Tetap','Campuran','Saham','Indeks'];
+// ===== WEEKLY UPDATE / BAREKSA DATA =====
+const KISI_PRODUCTS = [{"index":0,"name":"Reksa Dana KISI Money Market Fund","type":"Money Market"},{"index":1,"name":"Reksa Dana KISI Fixed Income Fund","type":"Fixed Income"},{"index":2,"name":"Reksa Dana KISI Equity Fund","type":"Equity"},{"index":3,"name":"REKSA DANA SYARIAH KIM FIXED INCOME SHARIA","type":"Fixed Income"},{"index":4,"name":"REKSA DANA SYARIAH KIM MONEY MARKET SHARIA","type":"Money Market"},{"index":5,"name":"REKSA DANA KIM BALANCED FUND","type":"Balanced"},{"index":6,"name":"REKSA DANA KISI FIXED INCOME FUND PLUS","type":"Fixed Income"},{"index":7,"name":"Reksa Dana Capital Money Market Fund","type":"Money Market"},{"index":8,"name":"Reksa Dana Capital Fixed Income Fund","type":"Fixed Income"},{"index":9,"name":"Reksa Dana Syariah Capital Sharia Money Market","type":"Money Market"},{"index":10,"name":"Reksa Dana Pinnacle Money Market Fund","type":"Money Market"},{"index":11,"name":"Reksa Dana Pinnacle Indonesia Bond Fund","type":"Fixed Income"},{"index":12,"name":"Reksa Dana Pinnacle Strategic Equity Fund","type":"Equity"},{"index":13,"name":"REKSA DANA STAR STABLE INCOME FUND KELAS UTAMA","type":"Fixed Income"},{"index":14,"name":"Reksa Dana Star Money Market Kelas Utama","type":"Money Market"},{"index":15,"name":"Reksa Dana Avrist Ada Kas Mutiara","type":"Money Market"},{"index":16,"name":"Reksa Dana Avrist Ada Saham Blue Safir Kelas A","type":"Equity"},{"index":17,"name":"Reksa Dana Avrist Prime Bond Fund","type":"Fixed Income"},{"index":18,"name":"Reksa Dana Avrist Prime Income Fund","type":"Fixed Income"},{"index":19,"name":"Reksa Dana Indeks Avrist IDX30","type":"Indeks"},{"index":20,"name":"Reksa Dana Syariah Avrist Ada Liquid Syariah","type":"Money Market"},{"index":21,"name":"Reksa Dana Avrist Emerald Stable Fund","type":"Fixed Income"},{"index":22,"name":"REKSA DANA SYARIAH BERBASIS SUKUK AVRIST ADA SUKUK BERKAH SYARIAH KELAS A","type":"Fixed Income"},{"index":23,"name":"REKSA DANA SYARIAH BERBASIS SUKUK AVRIST ADA SUKUK BERKAH SYARIAH KELAS B","type":"Fixed Income"},{"index":24,"name":"Reksa Dana Syariah Avrist Sukuk Income Fund","type":"Fixed Income"},{"index":25,"name":"Reksa Dana Indeks Insight Sri Kehati Likuid","type":"Indeks"},{"index":26,"name":"REKSA DANA INSIGHT MONEY","type":"Money Market"},{"index":27,"name":"REKSA DANA INSIGHT MONEY SYARIAH","type":"Money Market"},{"index":28,"name":"REKSA DANA INSIGHT RENEWABLE ENERGY FUND","type":"Fixed Income"},{"index":29,"name":"Rd Haji Syariah I Hajj","type":"Fixed Income"},{"index":30,"name":"REKSA DANA MNC DANA LIKUID","type":"Fixed Income"},{"index":31,"name":"REKSA DANA MNC DANA SYARIAH","type":"Fixed Income"},{"index":32,"name":"REKSA DANA MNC DANA LANCAR","type":"Money Market"},{"index":33,"name":"REKSA DANA SYARIAH MNC DANA SYARIAH BAROKAH","type":"Money Market"},{"index":34,"name":"Majoris Pasar Uang Syariah Indonesia","type":"Money Market"},{"index":35,"name":"Majoris Obligasi Utama Indonesia","type":"Fixed Income"},{"index":36,"name":"Majoris Pasar Uang Indonesia","type":"Money Market"},{"index":37,"name":"Reksa Dana Syariah Majoris Saham Syariah Indonesia","type":"Equity"},{"index":38,"name":"Majoris Sukuk Negara Indonesia","type":"Fixed Income"},{"index":39,"name":"PNM Dana Optima Kelas A","type":"Fixed Income"},{"index":40,"name":"PNM Optima Bulanan","type":"Fixed Income"},{"index":41,"name":"PNM Surat Berharga Syariah Negara","type":"Fixed Income"},{"index":42,"name":"PNM Dana Tunai","type":"Money Market"},{"index":43,"name":"PNM Falah 2","type":"Money Market"},{"index":44,"name":"PNM Indeks Infobank15","type":"Indeks"},{"index":45,"name":"PNM Cinta Anak Bangsa Kelas Diamond","type":"Fixed Income"},{"index":46,"name":"PNM Cinta Anak Bangsa Kelas Gold","type":"Fixed Income"},{"index":47,"name":"Trimegah Fixed Income Plan","type":"Fixed Income"},{"index":48,"name":"Trim Kas 2 Kelas A","type":"Money Market"},{"index":49,"name":"Trimegah Dana Tetap Syariah Kelas A","type":"Fixed Income"},{"index":50,"name":"Trimegah Balanced Absolute Strategy Kelas A","type":"Balanced"},{"index":51,"name":"Reksa Dana Victoria Obligasi Negara Syariah","type":"Fixed Income"},{"index":52,"name":"Reksa Dana Victoria Fixed Income","type":"Fixed Income"},{"index":53,"name":"REKSA DANA SYARIAH VICTORIA PASAR UANG SYARIAH","type":"Money Market"},{"index":54,"name":"Reksa Dana Victoria Campuran Dinamis","type":"Balanced"},{"index":55,"name":"Mandiri Investa Pasar Uang Kelas A","type":"Money Market"},{"index":56,"name":"Mandiri Investa Pasar Uang 2","type":"Money Market"},{"index":57,"name":"Mandiri Pasar Uang Syariah Kelas A","type":"Money Market"},{"index":58,"name":"Mandiri Obligasi Optima II","type":"Fixed Income"},{"index":59,"name":"Mandiri Investa Dana Syariah Kelas A","type":"Fixed Income"},{"index":60,"name":"Mandiri Investa Dana Syariah Kelas D","type":"Fixed Income"},{"index":61,"name":"Mandiri Indeks FTSE Indonesia ESG Kelas A","type":"Indeks"},{"index":62,"name":"Mandiri Investa Cerdas Bangsa Kelas B","type":"Equity"},{"index":63,"name":"Mandiri Investa Indeks Obligasi Negara Kelas A","type":"Indeks"},{"index":64,"name":"Mandiri Investa Syariah Berimbang","type":"Balanced"},{"index":65,"name":"Mandiri Investa Equity Dynamo Factor","type":"Equity"},{"index":66,"name":"REKSA DANA SAM DANA SAHAM NUSANTARA KELAS A","type":"Equity"},{"index":67,"name":"REKSA DANA SAM INDONESIAN EQUITY FUND","type":"Equity"},{"index":68,"name":"REKSA DANA SAM SHARIA EQUITY FUND","type":"Equity"},{"index":69,"name":"REKSA DANA SAM OBLIGASI OPTIMA KELAS A","type":"Fixed Income"},{"index":70,"name":"REKSA DANA SAM SUKUK SYARIAH SEJAHTERA","type":"Fixed Income"},{"index":71,"name":"Reksa Dana SAM Dana Kas","type":"Money Market"},{"index":72,"name":"SAM Dana Berkembang","type":"Balanced"},{"index":73,"name":"REKSA DANA RECAPITAL EQUITY","type":"Equity"},{"index":74,"name":"REKSA DANA RECAPITAL PENDAPATAN TETAP DANA GEMILANG","type":"Fixed Income"},{"index":75,"name":"REKSA DANA RECAPITAL MONEY MARKET LIQUID","type":"Money Market"},{"index":76,"name":"Reksa Dana Sucorinvest Maxi Fund","type":"Equity"},{"index":77,"name":"REKSA DANA SUCORINVEST SOE PLUS EQUITY FUND","type":"Equity"},{"index":78,"name":"Reksa Dana Sucorinvest Sharia Equity Fund","type":"Equity"},{"index":79,"name":"Reksa Dana Pendapatan Tetap Reksa Dana Sucorinvest Bond Fund","type":"Fixed Income"},{"index":80,"name":"REKSA DANA PENDAPATAN TETAP SUCORINVEST STABLE FUND","type":"Fixed Income"},{"index":81,"name":"Reksa Dana Sucorinvest Money Market Fund","type":"Money Market"},{"index":82,"name":"Reksa Dana Syariah Sucorinvest Sharia Money Market Fund","type":"Money Market"},{"index":83,"name":"Reksa Dana Balanced Fund Sucorinvest Anak Pintar","type":"Balanced"},{"index":84,"name":"REKSA DANA SYARIAH SUCORINVEST SHARIA BALANCED FUND","type":"Balanced"},{"index":85,"name":"REKSA DANA SYARIAH BERBASIS SUKUK SUCORINVEST SHARIA SUKUK FUND KELAS A","type":"Fixed Income"}];
+const WK_CATS = ['Pasar Uang','Pendapatan Tetap','Campuran','Saham','Indeks & ETF'];
+const WK_TYPE_ALIASES = {
+  'Pasar Uang':'Pasar Uang','Money Market':'Pasar Uang',
+  'Pendapatan Tetap':'Pendapatan Tetap','Fixed Income':'Pendapatan Tetap',
+  'Campuran':'Campuran','Balanced':'Campuran',
+  'Saham':'Saham','Equity':'Saham',
+  'Indeks':'Indeks & ETF','Indeks & ETF':'Indeks & ETF','Index':'Indeks & ETF'
+};
 const WK_DEFAULTS = [
-  [ // Pasar Uang
-    {name:'Insight Money Syariah',nav:'1.757,56',aum:'462,37 B',ret:'5,80'},
-    {name:'Pinnacle Money Market Fund',nav:'1.663,58',aum:'888,20 B',ret:'5,69'},
-    {name:'Insight Money',nav:'1.914,62',aum:'463,40 B',ret:'5,67'},
-    {name:'MNC Dana Lancar',nav:'2.032,79',aum:'309,84 B',ret:'5,64'},
-    {name:'MNC Dana Syariah Barokah',nav:'1.602,18',aum:'43,94 B',ret:'5,57'},
-  ],
-  [ // Pendapatan Tetap
-    {name:'Sucorinvest Sharia Bond Fund',nav:'1.234,56',aum:'512,10 B',ret:'8,42'},
-    {name:'Manulife Obligasi Negara Indonesia',nav:'2.105,30',aum:'1.204,50 B',ret:'7,98'},
-    {name:'Schroder Dana Andalan II',nav:'1.876,40',aum:'340,20 B',ret:'7,75'},
-    {name:'BNI-AM Dana Lancar Syariah',nav:'1.450,10',aum:'220,80 B',ret:'7,61'},
-    {name:'Mandiri Investa Dana Obligasi',nav:'1.320,90',aum:'186,40 B',ret:'7,45'},
-  ],
-  [ // Campuran
-    {name:'Sucorinvest Sharia Equity Fund',nav:'3.410,20',aum:'890,30 B',ret:'12,84'},
-    {name:'Panin Dana Unggulan',nav:'2.987,50',aum:'540,60 B',ret:'11,92'},
-    {name:'BNI-AM Dana Campuran',nav:'1.654,30',aum:'312,40 B',ret:'10,78'},
-    {name:'Eastspring Balanced Fund',nav:'2.231,10',aum:'220,10 B',ret:'10,34'},
-    {name:'Manulife Dana Campuran II',nav:'1.890,40',aum:'180,70 B',ret:'9,87'},
-  ],
-  [ // Saham
-    {name:'Schroder Dana Prestasi Plus',nav:'4.512,30',aum:'2.340,10 B',ret:'18,42'},
-    {name:'Manulife Saham Andalan',nav:'3.870,60',aum:'1.120,50 B',ret:'16,98'},
-    {name:'BNI-AM Dana Saham',nav:'2.910,20',aum:'890,40 B',ret:'15,75'},
-    {name:'Sucorinvest Equity Fund',nav:'3.120,80',aum:'670,30 B',ret:'14,61'},
-    {name:'Panin Dana Prima',nav:'2.654,10',aum:'430,90 B',ret:'13,45'},
-  ],
-  [ // Indeks
-    {name:'Reksa Dana Indeks IDX30',nav:'1.234,56',aum:'1.890,30 B',ret:'14,82'},
-    {name:'BNI-AM Indeks IDX80',nav:'987,40',aum:'340,20 B',ret:'13,67'},
-    {name:'Manulife Dana Saham Syariah Index',nav:'1.102,30',aum:'280,10 B',ret:'12,94'},
-    {name:'Sucorinvest Index Fund',nav:'1.456,80',aum:'190,50 B',ret:'11,78'},
-    {name:'Eastspring Investments IDX Index Fund',nav:'1.320,10',aum:'150,40 B',ret:'10,65'},
-  ],
+  [{name:'Insight Money Syariah',nav:'1.757,56',aum:'462,37 B',ret:'5,80'},{name:'Pinnacle Money Market Fund',nav:'1.663,58',aum:'888,20 B',ret:'5,69'},{name:'Insight Money',nav:'1.914,62',aum:'463,40 B',ret:'5,67'},{name:'MNC Dana Lancar',nav:'2.032,79',aum:'309,84 B',ret:'5,64'},{name:'MNC Dana Syariah Barokah',nav:'1.602,18',aum:'43,94 B',ret:'5,57'}],
+  [{name:'Sucorinvest Sharia Bond Fund',nav:'1.234,56',aum:'512,10 B',ret:'8,42'},{name:'Manulife Obligasi Negara Indonesia',nav:'2.105,30',aum:'1.204,50 B',ret:'7,98'},{name:'Schroder Dana Andalan II',nav:'1.876,40',aum:'340,20 B',ret:'7,75'},{name:'BNI-AM Dana Lancar Syariah',nav:'1.450,10',aum:'220,80 B',ret:'7,61'},{name:'Mandiri Investa Dana Obligasi',nav:'1.320,90',aum:'186,40 B',ret:'7,45'}],
+  [{name:'Sucorinvest Sharia Equity Fund',nav:'3.410,20',aum:'890,30 B',ret:'12,84'},{name:'Panin Dana Unggulan',nav:'2.987,50',aum:'540,60 B',ret:'11,92'},{name:'BNI-AM Dana Campuran',nav:'1.654,30',aum:'312,40 B',ret:'10,78'},{name:'Eastspring Balanced Fund',nav:'2.231,10',aum:'220,10 B',ret:'10,34'},{name:'Manulife Dana Campuran II',nav:'1.890,40',aum:'180,70 B',ret:'9,87'}],
+  [{name:'Schroder Dana Prestasi Plus',nav:'4.512,30',aum:'2.340,10 B',ret:'18,42'},{name:'Manulife Saham Andalan',nav:'3.870,60',aum:'1.120,50 B',ret:'16,98'},{name:'BNI-AM Dana Saham',nav:'2.910,20',aum:'890,40 B',ret:'15,75'},{name:'Sucorinvest Equity Fund',nav:'3.120,80',aum:'670,30 B',ret:'14,61'},{name:'Panin Dana Prima',nav:'2.654,10',aum:'430,90 B',ret:'13,45'}],
+  [{name:'Reksa Dana Indeks IDX30',nav:'1.234,56',aum:'1.890,30 B',ret:'14,82'},{name:'BNI-AM Indeks IDX80',nav:'987,40',aum:'340,20 B',ret:'13,67'},{name:'Manulife Dana Saham Syariah Index',nav:'1.102,30',aum:'280,10 B',ret:'12,94'},{name:'Sucorinvest Index Fund',nav:'1.456,80',aum:'190,50 B',ret:'11,78'},{name:'Eastspring Investments IDX Index Fund',nav:'1.320,10',aum:'150,40 B',ret:'10,65'}]
 ];
-const FORM_IDS = ['wk-pu-form','wk-pt-form','wk-cp-form','wk-sh-form','wk-id-form'];
-
-function buildWKForms(){
-  WK_DEFAULTS.forEach((cat,ci)=>{
-    const el=document.getElementById(FORM_IDS[ci]);
-    el.innerHTML=cat.map((rd,ri)=>`
-      <div class="ca-card-form" style="margin-bottom:6px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:10px;font-weight:700;color:var(--t2)">#${ri+1}</span>
-          ${cat.length>1?`<button onclick="removeWKItem(${ci},${ri})" style="font-size:10px;color:var(--red);background:var(--red-dim);border:1px solid rgba(220,38,38,0.2);border-radius:5px;padding:2px 8px;cursor:pointer;font-family:'Inter',sans-serif">× Hapus</button>`:''}
-        </div>
-        <div class="fg" style="margin-bottom:4px">
-          <div class="ff" style="grid-column:1/-1"><label class="fl">Nama Reksa Dana</label><input class="fi" id="wkrd-${ci}-${ri}-name" value="${rd.name}" oninput="up('weekly')"></div>
-        </div>
-        <div class="fg3">
-          <div class="ff"><label class="fl">Min Pembelian</label><input class="fi" id="wkrd-${ci}-${ri}-nav" value="${rd.nav}" oninput="up('weekly')"></div>
-          <div class="ff"><label class="fl">AUM</label><input class="fi" id="wkrd-${ci}-${ri}-aum" value="${rd.aum}" oninput="up('weekly')"></div>
-          <div class="ff"><label class="fl">1 Yr Return (%)</label><input class="fi" id="wkrd-${ci}-${ri}-ret" value="${rd.ret}" oninput="up('weekly')"></div>
-        </div>
-      </div>`).join('') + (cat.length<5 ? `
-    <button onclick="addWKItem(${ci})" style="width:100%;padding:8px;border:1px dashed var(--inp-b);border-radius:var(--r);background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:10px">+ Tambah Reksa Dana</button>` : '');
-  });
+let WK_DATA=[];
+let WK_SOURCE_META={source:'manual sample',date:'',aumDate:'',count:0,matched:0,unmatched:0};
+const FORM_IDS=['wk-pu-form','wk-pt-form','wk-cp-form','wk-sh-form','wk-id-form'];
+function wkEscape(x){return String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function normWKName(x){return String(x??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/reksa dana|reksadana|rd\b/g,' ').replace(/[^a-z0-9]+/g,' ').trim().replace(/\bkelas\s+(utama|a|b|c|d|gold|diamond)\b/g,'').replace(/\s+/g,' ').trim();}
+function parseWKNumber(x){if(x===null||x===undefined)return null;let s=String(x).trim().replace(/\s/g,'').replace(/%/g,'').replace(/[+]/g,'');if(!s||s==='-'||s==='—')return null;const neg=s.includes('(')&&s.includes(')');s=s.replace(/[()]/g,'').replace(/Rp\.?/ig,'');if(/^[+-]?\d{1,3}(\.\d{3})*(,\d+)?$/.test(s))s=s.replace(/\./g,'').replace(',','.');else if(/^\d+,\d+$/.test(s))s=s.replace(',','.');else s=s.replace(/,/g,'');const n=Number(s);return Number.isFinite(n)?(neg?-n:n):null;}
+function formatWKNum(n,dec=2){return Number.isFinite(n)?n.toLocaleString('id-ID',{minimumFractionDigits:dec,maximumFractionDigits:dec}):'-';}
+function formatWKAUM(n){if(!Number.isFinite(n))return '-';const a=Math.abs(n);if(a>=1e12)return formatWKNum(n/1e12,2)+' T';if(a>=1e9)return formatWKNum(n/1e9,2)+' M';if(a>=1e6)return formatWKNum(n/1e6,2)+' jt';return n.toLocaleString('id-ID');}
+function normWKHeader(x){return String(x??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();}
+function findWKKey(obj,patterns){const keys=Object.keys(obj||{});return keys.find(k=>patterns.some(p=>normWKHeader(k).includes(p)));}
+function normalizeWKObject(o){if(!o||typeof o!=='object'||Array.isArray(o))return null;const nameKey=findWKKey(o,['reksa dana','reksadana','fund name','nama reksa']);const typeKey=findWKKey(o,['jenis reksa dana','jenis']);const navKey=findWKKey(o,['nab']);const aumKey=findWKKey(o,['aum','dana kelolaan']);const r1mKey=findWKKey(o,['1 bln','1 bulan','return 1m','return 1 month']);const r3mKey=findWKKey(o,['3 bln','3 bulan','return 3m','return 3 month']);const r1yKey=findWKKey(o,['1 th','1 tahun','return 1y','return 1 year']);if(!nameKey)return null;const name=String(o[nameKey]??'').replace(/\s+/g,' ').trim();if(!name||name.toLowerCase()==='reksa dana')return null;const typeRaw=String(typeKey?o[typeKey]:'').trim();return {id:String(o.id||o.fund_id||o.product_id||o.code||name),name,type:WK_TYPE_ALIASES[typeRaw]||typeRaw,category:String(o.kategori||o.category||o.Kategori||'').trim(),manager:String(o['Manajer Investasi']||o.manager||o.investment_manager||'').trim(),currency:String(o['Mata Uang']||o.currency||'IDR').trim(),nav:parseWKNumber(navKey?o[navKey]:null),return1M:parseWKNumber(r1mKey?o[r1mKey]:null),return3M:parseWKNumber(r3mKey?o[r3mKey]:null),return1Y:parseWKNumber(r1yKey?o[r1yKey]:null),aum:parseWKNumber(aumKey?o[aumKey]:null),aumPrevious:null,aumGrowth1M:null};}
+function walkWKJSON(x,out){if(!x||typeof x!=='object')return;if(Array.isArray(x)){x.forEach(v=>walkWKJSON(v,out));return;}const n=normalizeWKObject(x);if(n)out.push(n);Object.values(x).forEach(v=>{if(v&&typeof v==='object')walkWKJSON(v,out);});}
+function parseWKTables(doc){const out=[];[...doc.querySelectorAll('table')].forEach(table=>{const rows=[...table.querySelectorAll('tr')];if(rows.length<2)return;const heads=[...rows[0].querySelectorAll('th,td')].map(c=>c.textContent.trim());const hn=heads.map(normWKHeader).join('|');if(!hn.includes('reksa dana'))return;rows.slice(1).forEach(tr=>{const cells=[...tr.querySelectorAll('td,th')].map(c=>c.textContent.replace(/\s+/g,' ').trim());if(cells.length<heads.length)return;const o={};heads.forEach((h,i)=>o[h]=cells[i]);const n=normalizeWKObject(o);if(n)out.push(n);});});return out;}
+function parseWKResponse(text){const t=text.trim();try{const j=JSON.parse(t);const out=[];walkWKJSON(j,out);if(out.length)return out;}catch(e){}const doc=new DOMParser().parseFromString(text,'text/html');const out=parseWKTables(doc);if(out.length)return out;doc.querySelectorAll('script[type="application/json"]').forEach(s=>{try{walkWKJSON(JSON.parse(s.textContent),out);}catch(e){}});return out;}
+function dedupeWK(rows){const m=new Map();rows.forEach(r=>{const key=(r.id+'|'+r.name).toLowerCase();if(!m.has(key))m.set(key,r);});return [...m.values()];}
+function matchKISIProducts(rows){const byName=new Map();rows.forEach(r=>byName.set(normWKName(r.name),r));const matched=[],unmatched=[];KISI_PRODUCTS.forEach(k=>{const nk=normWKName(k.name);let r=byName.get(nk);if(!r){const candidates=rows.filter(x=>{const nx=normWKName(x.name);return nx===nk||nx.includes(nk)||nk.includes(nx);});if(candidates.length===1)r=candidates[0];}if(r){r.kisiName=k.name;r.kisiType=k.type;r.kisiIndex=k.index;matched.push(r);}else unmatched.push(k);});return {matched:dedupeWK(matched),unmatched};}
+function metricWKValue(r,m){return m==='aumGrowth1M'?r.aumGrowth1M:m==='aum'?r.aum:r[m];}
+function metricWKLabel(m){return ({return1M:'1M Return',return3M:'3M Return',return1Y:'1Y Return',aumGrowth1M:'AUM Growth 1M',aum:'AUM'})[m]||m;}
+function metricWKDisplay(r,m){const n=metricWKValue(r,m);if(!Number.isFinite(n))return '-';return m==='aum'?formatWKAUM(n):formatWKNum(n,2)+'%';}
+function buildWKForms(){WK_DEFAULTS.forEach((cat,ci)=>{const el=document.getElementById(FORM_IDS[ci]);if(!el)return;el.innerHTML=cat.map((rd,ri)=>`<div class="ca-card-form" style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:10px;font-weight:700;color:var(--t2)">#${ri+1}</span></div><div class="fg" style="margin-bottom:4px"><div class="ff" style="grid-column:1/-1"><label class="fl">Nama Reksa Dana</label><input class="fi" id="wkrd-${ci}-${ri}-name" value="${wkEscape(rd.name)}" oninput="up('weekly')"></div></div><div class="fg3"><div class="ff"><label class="fl">NAB</label><input class="fi" id="wkrd-${ci}-${ri}-nav" value="${wkEscape(rd.nav)}" oninput="up('weekly')"></div><div class="ff"><label class="fl">AUM</label><input class="fi" id="wkrd-${ci}-${ri}-aum" value="${wkEscape(rd.aum)}" oninput="up('weekly')"></div><div class="ff"><label class="fl">Metric</label><input class="fi" id="wkrd-${ci}-${ri}-ret" value="${wkEscape(rd.ret)}" oninput="up('weekly')"></div></div></div>`).join('');});}
+function applyWKRanking(){const metric=v('wk-metric')||'return1Y',topN=Number(v('wk-topn')||5),catFilter=v('wk-category-filter')||'all';if(!WK_DATA.length){upWeekly();return;}const byType=WK_CATS.map(type=>{let rows=WK_DATA.filter(r=>(WK_TYPE_ALIASES[r.kisiType||r.type]||r.kisiType||r.type)===type);if(catFilter!=='all')rows=rows.filter(r=>String(r.category).toLowerCase()===catFilter.toLowerCase());return rows.filter(r=>Number.isFinite(metricWKValue(r,metric))).sort((a,b)=>metricWKValue(b,metric)-metricWKValue(a,metric)).slice(0,topN);});byType.forEach((rows,ci)=>{WK_DEFAULTS[ci]=rows.map(r=>({name:r.kisiName||r.name,nav:Number.isFinite(r.nav)?formatWKNum(r.nav,2):'-',aum:formatWKAUM(r.aum),ret:metricWKDisplay(r,metric)}));});buildWKForms();upWeekly();setWKStatus(`Ranking hanya dari produk KISI: ${WK_SOURCE_META.matched} match dari ${KISI_PRODUCTS.length} produk. ${WK_SOURCE_META.unmatched} belum match. Metric: ${metricWKLabel(metric)}.`,true);}
+function setWKStatus(msg,ok=false){const e=document.getElementById('wk-fetch-status');if(e){e.textContent=msg;e.style.color=ok?'var(--green)':'var(--t2)';}}
+async function fetchBareksaData(){
+  const btn=document.getElementById('wk-fetch-btn');
+  const proxy=(v('wk-proxy-url')||'').trim().replace(/\/$/,'');
+  btn.disabled=true; btn.textContent='⏳ Resolving...';
+  if(!proxy){setWKStatus('✗ Isi URL Cloudflare Worker terlebih dahulu. Contoh: https://kisi-bareksa-proxy.<subdomain>.workers.dev',false);btn.disabled=false;btn.textContent='↻ Fetch Bareksa';return;}
+  try{
+    const health=await fetch(proxy+'/health');
+    if(!health.ok) throw new Error('Proxy tidak bisa dihubungi. Cek URL Worker.');
+    const items=KISI_PRODUCTS.map(x=>({name:x.name,type:x.type}));
+    setWKStatus(`Mencari URL Bareksa untuk ${items.length} produk KISI…`);
+    const rr=await fetch(proxy+'/resolve-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items})});
+    if(!rr.ok) throw new Error(`Resolve HTTP ${rr.status}`);
+    const resolved=(await rr.json()).items||[];
+    const mapped=resolved.map((r,i)=>({...items[i],url:r.url,confidence:r.confidence||0})).filter(x=>x.url);
+    if(!mapped.length) throw new Error('Tidak ada URL produk Bareksa yang berhasil ditemukan.');
+    setWKStatus(`URL ditemukan ${mapped.length}/${items.length}. Mengambil data produk Bareksa…`);
+    btn.textContent='⏳ Fetching...';
+    const fr=await fetch(proxy+'/fund-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:mapped})});
+    if(!fr.ok) throw new Error(`Fund HTTP ${fr.status}`);
+    const payload=await fr.json();
+    const rows=payload.items||[];
+    const all=rows.filter(r=>r.ok!==false && (r.name||r.sourceUrl));
+    const {matched,unmatched}=matchKISIProducts(all);
+    WK_DATA=matched;
+    WK_SOURCE_META={source:'Cloudflare Worker → Bareksa individual product pages',date:'',aumDate:'',count:all.length,matched:matched.length,unmatched:unmatched.length};
+    if(!matched.length) throw new Error(`Data Bareksa terbaca ${all.length}, tetapi tidak ada yang cocok dengan universe KISI.`);
+    document.getElementById('wk-nav-note').value='Bareksa • KISI Universe';
+    applyWKRanking();
+    const failed=rows.filter(r=>r.ok===false).length;
+    setWKStatus(`✓ Selesai. ${matched.length}/${KISI_PRODUCTS.length} produk KISI ter-match. ${failed} gagal fetch. Untuk AUM Growth 1M tetap diperlukan historical AUM.`,true);
+  }catch(err){setWKStatus('✗ Gagal fetch Bareksa: '+err.message,false)}
+  finally{btn.disabled=false;btn.textContent='↻ Fetch Bareksa';}
 }
-function syncWKFromDOM(ci){
-  WK_DEFAULTS[ci]=WK_DEFAULTS[ci].map((rd,ri)=>({
-    name:v(`wkrd-${ci}-${ri}-name`)||'', nav:v(`wkrd-${ci}-${ri}-nav`)||'',
-    aum:v(`wkrd-${ci}-${ri}-aum`)||'', ret:v(`wkrd-${ci}-${ri}-ret`)||''
-  }));
-}
-function addWKItem(ci){
-  syncWKFromDOM(ci);
-  if(WK_DEFAULTS[ci].length>=5) return;
-  WK_DEFAULTS[ci].push({name:'',nav:'',aum:'',ret:''});
-  buildWKForms();
-  up('weekly');
-}
-function removeWKItem(ci,ri){
-  syncWKFromDOM(ci);
-  if(WK_DEFAULTS[ci].length<=1) return;
-  WK_DEFAULTS[ci].splice(ri,1);
-  buildWKForms();
-  up('weekly');
-}
-
-function upWeekly(){
-  const dt=fmtD(v('wk-date'))||'Senin, 27 April 2026';
-  const note=v('wk-nav-note')||'Data NAV 24 April 2026';
-  for(let ci=0;ci<5;ci++){
-    const pn=ci+1;
-    const dateEl=document.getElementById(`wk-p${pn}-date`);if(dateEl)dateEl.textContent=dt;
-    const noteEl=document.getElementById(`wk-p${pn}-note`);if(noteEl)noteEl.textContent=`1 Yr Return (${note})`;
-    const listEl=document.getElementById(`wk-p${ci+1}-list`);
-    if(!listEl)continue;
-    listEl.innerHTML='';
-    for(let ri=0;ri<WK_DEFAULTS[ci].length;ri++){
-      const def=WK_DEFAULTS[ci][ri];
-      const nm=v(`wkrd-${ci}-${ri}-name`)||def.name;
-      const nav=v(`wkrd-${ci}-${ri}-nav`)||def.nav;
-      const aum=v(`wkrd-${ci}-${ri}-aum`)||def.aum;
-      const ret=v(`wkrd-${ci}-${ri}-ret`)||def.ret;
-      const div=document.createElement('div');
-      div.className='sc-rd';
-      div.innerHTML=`
-        <div class="sc-rd-left">
-          <div class="sc-rd-rank">#${ri+1}</div>
-          <div class="sc-rd-name">${nm}</div>
-          <div class="sc-rd-meta">Min Pembelian : ${nav} &nbsp;&nbsp; AUM : ${aum}</div>
-        </div>
-        <div class="sc-rd-return-wrap">
-          <div class="sc-rd-return-lbl">1 Yr Return</div>
-          <div class="sc-rd-return">${ret}%</div>
-        </div>`;
-      listEl.appendChild(div);
-    }
-  }
-}
+function parseWKCSV(text){const rows=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'&&quoted&&n==='"'){cell+='"';i++;continue;}if(c==='"'){quoted=!quoted;continue;}if(c===','&&!quoted){row.push(cell);cell='';continue;}if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(x=>String(x).trim()))rows.push(row);row=[];cell='';continue;}cell+=c;}if(cell||row.length){row.push(cell);if(row.some(x=>String(x).trim()))rows.push(row);}if(rows.length<2)return [];const heads=rows[0].map(normWKHeader);return rows.slice(1).map(r=>{const o={};heads.forEach((h,i)=>o[h]=r[i]??'');return o;});}
+function parseWKDate(x){if(!x)return null;const s=String(x).trim();let m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/);if(m)return new Date(Date.UTC(+m[1],+m[2]-1,+m[3]));m=s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/);if(m)return new Date(Date.UTC(+m[3],+m[2]-1,+m[1]));const months={januari:0,februari:1,maret:2,april:3,mei:4,juni:5,juli:6,agustus:7,september:8,oktober:9,november:10,desember:11,jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};m=s.toLowerCase().match(/^(\d{1,2})\s+([a-z]+)\s+(\d{4})$/);if(m&&months[m[2]]!==undefined)return new Date(Date.UTC(+m[3],months[m[2]],+m[1]));m=s.toLowerCase().match(/^([a-z]+)\s+(\d{4})$/);if(m&&months[m[1]]!==undefined)return new Date(Date.UTC(+m[2],months[m[1]],1));const d=new Date(s);return Number.isNaN(d.getTime())?null:d;}
+function extractWKAUMHistory(raw){let arr=[];try{const j=JSON.parse(raw);arr=Array.isArray(j)?j:(j.data||j.rows||j.results||[]);}catch(e){arr=parseWKCSV(raw);}return arr.map(o=>{const nameKey=findWKKey(o,['reksa dana','reksadana','fund name','nama reksa','name']),aumKey=findWKKey(o,['aum','dana kelolaan']),dateKey=findWKKey(o,['date','tanggal','periode','period','bulan','month']);if(!nameKey||!aumKey||!dateKey)return null;return{name:String(o[nameKey]||'').trim(),date:parseWKDate(o[dateKey]),aum:parseWKNumber(o[aumKey])};}).filter(x=>x&&x.name&&x.date&&Number.isFinite(x.aum));}
+function mergeWKAUMHistory(history){const groups=new Map();history.forEach(x=>{const k=normWKName(x.name);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x);});WK_DATA.forEach(r=>{let arr=groups.get(normWKName(r.name));if(!arr){const loose=[...groups.entries()].find(([g])=>g.includes(normWKName(r.name))||normWKName(r.name).includes(g));arr=loose?.[1];}if(!arr||arr.length<2)return;arr.sort((a,b)=>b.date-a.date);const latest=arr[0],prev=arr[1];if(!Number.isFinite(r.aum)||r.aum<=0)r.aum=latest.aum;r.aumPrevious=prev.aum;r.aumGrowth1M=((latest.aum/prev.aum)-1)*100;});}
+async function loadWKAUMHistory(){try{let raw='';const f=document.getElementById('wk-aum-file')?.files?.[0];if(f)raw=await f.text();else{const u=v('wk-aum-url');if(!u){setWKStatus('Pilih file CSV/JSON atau isi URL historical AUM.');return;}const proxy=v('wk-proxy-url'),urls=proxy?[proxy+encodeURIComponent(u),u]:[u];let err='';for(const url of urls){try{const res=await fetch(url);if(!res.ok)throw new Error(`HTTP ${res.status}`);raw=await res.text();if(raw.length)break;}catch(e){err=e.message;}}if(!raw)throw new Error(err||'Tidak ada response');}const hist=extractWKAUMHistory(raw);if(!hist.length)throw new Error('Format historical AUM tidak dikenali. Minimal diperlukan nama reksa dana, periode/tanggal, dan AUM.');if(!WK_DATA.length)throw new Error('Fetch data produk Bareksa terlebih dahulu.');mergeWKAUMHistory(hist);const ready=WK_DATA.filter(r=>Number.isFinite(r.aumGrowth1M)).length;setWKStatus(`Historical AUM loaded: ${hist.length} baris. ${ready} produk KISI memiliki AUM Growth 1M.`,true);if(v('wk-metric')==='aumGrowth1M')applyWKRanking();}catch(e){setWKStatus('✗ Gagal load historical AUM: '+e.message,false);}}
+function clearWKAUMHistory(){WK_DATA.forEach(r=>{r.aumPrevious=null;r.aumGrowth1M=null;});if(v('wk-metric')==='aumGrowth1M')applyWKRanking();setWKStatus('Historical AUM di-reset.');}
+function clearWKData(){WK_DATA=[];WK_SOURCE_META={source:'manual sample',date:'',aumDate:'',count:0,matched:0,unmatched:0};document.getElementById('wk-nav-note').value='';document.getElementById('wk-metric').value='return1Y';setWKStatus(`Data Bareksa dihapus. Universe tetap ${KISI_PRODUCTS.length} produk KISI.`);buildWKForms();upWeekly();}
+function syncWKFromDOM(ci){WK_DEFAULTS[ci]=WK_DEFAULTS[ci].map((rd,ri)=>({name:v(`wkrd-${ci}-${ri}-name`)||'',nav:v(`wkrd-${ci}-${ri}-nav`)||'',aum:v(`wkrd-${ci}-${ri}-aum`)||'',ret:v(`wkrd-${ci}-${ri}-ret`)||''}));}
+function upWeekly(){const dt=fmtD(v('wk-date'))||fmtD(TODAY),metric=v('wk-metric')||'return1Y',note=v('wk-nav-note')||'Data Bareksa',label=metricWKLabel(metric);for(let ci=0;ci<5;ci++){const pn=ci+1,dateEl=document.getElementById(`wk-p${pn}-date`);if(dateEl)dateEl.textContent=dt;const noteEl=document.getElementById(`wk-p${pn}-note`);if(noteEl)noteEl.textContent=`${label} (${note})`;const listEl=document.getElementById(`wk-p${pn}-list`);if(!listEl)continue;listEl.innerHTML='';for(let ri=0;ri<WK_DEFAULTS[ci].length;ri++){const def=WK_DEFAULTS[ci][ri],nm=v(`wkrd-${ci}-${ri}-name`)||def.name,nav=v(`wkrd-${ci}-${ri}-nav`)||def.nav,aum=v(`wkrd-${ci}-${ri}-aum`)||def.aum,ret=v(`wkrd-${ci}-${ri}-ret`)||def.ret,div=document.createElement('div');div.className='sc-rd';div.innerHTML=`<div class="sc-rd-left"><div class="sc-rd-rank">#${ri+1}</div><div class="sc-rd-name">${wkEscape(nm)}</div><div class="sc-rd-meta">NAB : ${wkEscape(nav)} &nbsp;&nbsp; AUM : ${wkEscape(aum)}</div></div><div class="sc-rd-return-wrap"><div class="sc-rd-return-lbl">${wkEscape(label)}</div><div class="sc-rd-return">${wkEscape(ret)}${metric==='aum'?'':'%'}</div></div>`;listEl.appendChild(div);}}}
 
 // ===== WEEKLY BOND PICKS =====
 const BP_DEFAULTS = {
