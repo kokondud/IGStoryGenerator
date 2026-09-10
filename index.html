@@ -686,6 +686,10 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
     <div class="ff"><label class="fl">Flat</label><input class="fi" id="h-flat" placeholder="187" oninput="up('halftime')"></div>
     <div class="ff"><label class="fl">Turun</label><input class="fi" id="h-dn" placeholder="312" oninput="up('halftime')"></div>
   </div>
+  <div style="margin-top:6px;margin-bottom:2px">
+    <button type="button" class="btn-sec" id="btn-fetch-h-market" onclick="fetchIdxMarket('halftime')" style="width:100%;background:var(--blue-dim);border-color:rgba(37,99,235,0.3);color:var(--blue);font-weight:700">🔄 Fetch IHSG, Breadth & Sector</button>
+    <div id="fetch-h-market-status" style="font-size:10px;margin-top:5px;line-height:1.4"></div>
+  </div>
   <div class="fst">Foreign Flow</div>
   <div class="fg">
     <div class="ff"><label class="fl">Foreign Buy</label><input class="fi" id="h-fbuy" placeholder="1,23T" oninput="up('halftime')"></div>
@@ -728,6 +732,10 @@ linear-gradient(160deg, #071E17 0%, #0E3A2A 45%, #1F6F4A 100%);
     <div class="ff"><label class="fl">Naik</label><input class="fi" id="w-up" placeholder="289" oninput="up('wrap')"></div>
     <div class="ff"><label class="fl">Flat</label><input class="fi" id="w-flat" placeholder="201" oninput="up('wrap')"></div>
     <div class="ff"><label class="fl">Turun</label><input class="fi" id="w-dn" placeholder="258" oninput="up('wrap')"></div>
+  </div>
+  <div style="margin-top:6px;margin-bottom:2px">
+    <button type="button" class="btn-sec" id="btn-fetch-w-market" onclick="fetchIdxMarket('wrap')" style="width:100%;background:var(--blue-dim);border-color:rgba(37,99,235,0.3);color:var(--blue);font-weight:700">🔄 Fetch IHSG, Breadth & Sector</button>
+    <div id="fetch-w-market-status" style="font-size:10px;margin-top:5px;line-height:1.4"></div>
   </div>
   <div class="fst">Foreign Flow</div>
   <div class="fg">
@@ -2379,6 +2387,65 @@ function fmtMktNum(n, decimals){
 function fmtMktChg(n){
   const s = Math.abs(n).toFixed(2).replace('.', ',');
   return (n>=0?'+':'-') + s;
+}
+
+async function fetchIdxMarket(tab){
+  const btn=document.getElementById(`btn-fetch-${tab==='halftime'?'h':'w'}-market`);
+  const status=document.getElementById(`fetch-${tab==='halftime'?'h':'w'}-market-status`);
+  if(!btn||!status) return;
+  const orig=btn.textContent;
+  btn.disabled=true; btn.textContent='⏳ Mengambil data...'; status.textContent='';
+  try{
+    const res=await fetch(`${WORKER_URL}?market=idx`);
+    if(!res.ok) throw new Error('Worker HTTP '+res.status);
+    const data=await res.json();
+    if(data.error) throw new Error(data.error);
+    const m=data.market||data;
+    if(!m.ihsg||m.ihsg.price==null||m.ihsg.changePct==null) throw new Error('Data IHSG tidak lengkap');
+    const pfx=tab==='halftime'?'h':'w';
+    document.getElementById(`${pfx}-iv`).value=fmtMktNum(m.ihsg.price,2);
+    document.getElementById(`${pfx}-ic`).value=fmtMktChg(m.ihsg.changePct);
+    if(m.breadth){
+      document.getElementById(`${pfx}-up`).value=m.breadth.up;
+      document.getElementById(`${pfx}-flat`).value=m.breadth.flat;
+      document.getElementById(`${pfx}-dn`).value=m.breadth.down;
+    }
+    const sectors=Array.isArray(m.sectors)?m.sectors.filter(x=>x&&x.name&&Number.isFinite(Number(x.changePct))):[];
+    const pos=sectors.filter(x=>Number(x.changePct)>0).sort((a,b)=>Number(b.changePct)-Number(a.changePct));
+    const neg=sectors.filter(x=>Number(x.changePct)<0).sort((a,b)=>Number(a.changePct)-Number(b.changePct));
+    if(tab==='halftime'){
+      hDrvPos.forEach((d,i)=>{
+        const x=pos[i];
+        const n=document.getElementById(`hdrvp-n-${i}`), c=document.getElementById(`hdrvp-c-${i}`);
+        if(n&&c){ n.value=x?.name||''; c.value=x?fmtMktChg(Number(x.changePct)):''; }
+      });
+      hDrvNeg.forEach((d,i)=>{
+        const x=neg[i];
+        const n=document.getElementById(`hdrvn-n-${i}`), c=document.getElementById(`hdrvn-c-${i}`);
+        if(n&&c){ n.value=x?.name||''; c.value=x?fmtMktChg(Number(x.changePct)):''; }
+      });
+      up('halftime');
+    }else{
+      for(let i=1;i<=5;i++){
+        const x=pos[i-1];
+        const n=document.getElementById(`w-st${i}n`), c=document.getElementById(`w-st${i}c`);
+        if(n&&c){ n.value=x?.name||''; c.value=x?fmtMktChg(Number(x.changePct)):''; }
+      }
+      for(let i=1;i<=5;i++){
+        const x=neg[i-1];
+        const n=document.getElementById(`w-sb${i}n`), c=document.getElementById(`w-sb${i}c`);
+        if(n&&c){ n.value=x?.name||''; c.value=x?fmtMktChg(Number(x.changePct)):''; }
+      }
+      up('wrap');
+    }
+    status.style.color='var(--green)';
+    status.textContent=`✓ IHSG, breadth, dan ${tab==='halftime'?'sector driver':'5 sektor naik/turun'} berhasil diambil via Worker.`;
+  }catch(e){
+    status.style.color='var(--red)';
+    status.textContent=`✗ Gagal mengambil data: ${e?.message||e}`;
+  }finally{
+    btn.disabled=false; btn.textContent=orig;
+  }
 }
 
 async function fetchMarketData(){
