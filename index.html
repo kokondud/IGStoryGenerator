@@ -2394,19 +2394,21 @@ async function fetchIdxMarket(tab){
   const status=document.getElementById(`fetch-${tab==='halftime'?'h':'w'}-market-status`);
   if(!btn||!status) return;
   const orig=btn.textContent;
-  btn.disabled=true; btn.textContent='⏳ Mengambil data...'; status.textContent='Mencoba data resmi IDX...';
+  btn.disabled=true; btn.textContent='⏳ Mengambil data...'; status.textContent='Mengambil Stock Summary resmi IDX...';
   try{
-    // 1) Prefer authoritative IDX Stock Summary for breadth + market activity.
-    let idxData=null;
-    try{
-      const r=await fetch(`${WORKER_URL}?market=idx&part=idx`);
-      if(r.ok){
-        const d=await r.json();
-        if(!d.error && d.source==='IDX') idxData=d;
-      }
-    }catch(_){ }
+    // Breadth is IDX-only. Do not silently switch to Yahoo because the target
+    // universe must match IDX Stock Summary.
+    const idxRes=await fetch(`${WORKER_URL}?market=idx&part=idx`);
+    if(!idxRes.ok) throw new Error(`Worker IDX HTTP ${idxRes.status}`);
+    const idxData=await idxRes.json();
+    if(idxData.error) throw new Error(idxData.error);
+    if(idxData.source!=='IDX Stock Summary') throw new Error('Sumber breadth bukan IDX Stock Summary');
+    if(!idxData.complete) throw new Error(`Data IDX tidak lengkap: ${idxData.recordsReceived}/${idxData.recordsExpected} saham`);
 
-    // 2) IHSG + sector summary. Keep Yahoo/Investing fallback for sectors.
+    status.textContent=`✓ IDX ${idxData.recordsReceived} saham diterima. Mengambil IHSG & sektor...`;
+
+    // IHSG + sector summary. Yahoo/Investing is only used for sector/index display,
+    // never for market breadth.
     const summaryRes=await fetch(`${WORKER_URL}?market=idx&part=summary`);
     if(!summaryRes.ok) throw new Error('Worker summary HTTP '+summaryRes.status);
     const summary=await summaryRes.json();
@@ -2414,40 +2416,23 @@ async function fetchIdxMarket(tab){
     const m=summary.market||{};
     if(!m.ihsg||m.ihsg.price==null||m.ihsg.changePct==null) throw new Error('Data IHSG tidak lengkap');
 
-    let breadth;
-    if(idxData){
-      breadth={...idxData.breadth, requested:idxData.records, received:idxData.records, skipped:0};
-    }else{
-      // Fallback: Yahoo breadth in 40-stock pages.
-      const probeRes=await fetch(`${WORKER_URL}?market=idx&page=1&pageSize=40`);
-      if(!probeRes.ok) throw new Error('Worker breadth HTTP '+probeRes.status);
-      const probe=await probeRes.json();
-      if(probe.error) throw new Error(probe.error);
-      const totalPages=Number(probe.totalPages||1);
-      const pageResults=[probe];
-      if(totalPages>1){
-        let nextPage=2; const workerConcurrency=3;
-        while(nextPage<=totalPages){
-          const pages=[];
-          for(let k=0;k<workerConcurrency&&nextPage<=totalPages;k++,nextPage++) pages.push(nextPage);
-          status.textContent=`Fallback Yahoo breadth... ${Math.min(nextPage-1,totalPages)}/${totalPages} halaman`;
-          const results=await Promise.all(pages.map(async page=>{
-            const r=await fetch(`${WORKER_URL}?market=idx&page=${page}&pageSize=40`);
-            if(!r.ok) throw new Error(`Worker breadth page ${page} HTTP ${r.status}`);
-            const d=await r.json(); if(d.error) throw new Error(`Page ${page}: ${d.error}`); return d;
-          }));
-          pageResults.push(...results);
-        }
-      }
-      breadth=pageResults.reduce((acc,d)=>{const b=d.breadth||{}; acc.up+=+b.up||0;acc.flat+=+b.flat||0;acc.down+=+b.down||0;acc.noTrans+=+b.noTrans||0;acc.skipped+=+b.skipped||0;acc.requested+=+d.requested||0;acc.received+=+d.received||0;return acc;},{up:0,flat:0,down:0,noTrans:0,skipped:0,requested:0,received:0});
-    }
-
+    const breadth=idxData.breadth||{};
     const pfx=tab==='halftime'?'h':'w';
     document.getElementById(`${pfx}-iv`).value=fmtMktNum(Number(m.ihsg.price),2);
     document.getElementById(`${pfx}-ic`).value=fmtMktChg(Number(m.ihsg.changePct));
-    document.getElementById(`${pfx}-up`).value=breadth.up;
-    document.getElementById(`${pfx}-flat`).value=breadth.flat;
-    document.getElementById(`${pfx}-dn`).value=breadth.down;
+    document.getElementById(`${pfx}-up`).value=breadth.up??0;
+    document.getElementById(`${pfx}-flat`).value=breadth.flat??0;
+    document.getElementById(`${pfx}-dn`).value=breadth.down??0;
+
+    // IDX Stock Summary Value/Volume are already market-wide aggregates of the
+    // returned stock rows. Format them for the KISI fields.
+    const volume=Number(idxData.market?.volume||0);
+    const value=Number(idxData.market?.value||0);
+    const fmtCompact=(n,unit,dec=1)=>`${(n/unit).toLocaleString('id-ID',{minimumFractionDigits:dec,maximumFractionDigits:dec})}${unit===1e9?'B':'T'}`;
+    const volumeText=fmtCompact(volume,1e9,1);
+    const valueText='Rp'+fmtCompact(value,1e12,1);
+    document.getElementById(`${pfx}-vol`).value=volumeText;
+    document.getElementById(`${pfx}-val2`).value=valueText;
 
     const sectors=Array.isArray(m.sectors)?m.sectors.filter(x=>x&&x.name&&Number.isFinite(Number(x.changePct))):[];
     const pos=sectors.filter(x=>Number(x.changePct)>0).sort((a,b)=>Number(b.changePct)-Number(a.changePct));
@@ -2462,8 +2447,7 @@ async function fetchIdxMarket(tab){
       up('wrap');
     }
     status.style.color='var(--green)';
-    const source=idxData?'IDX Stock Summary':'Yahoo Finance fallback';
-    status.textContent=`✓ IHSG ${fmtMktNum(Number(m.ihsg.price),2)} (${fmtMktChg(Number(m.ihsg.changePct))}), breadth ${breadth.up}/${breadth.flat}/${breadth.down} — sumber: ${source}.`;
+    status.textContent=`✓ IDX ${idxData.recordsReceived}/${idxData.recordsExpected} saham — ${breadth.up} naik / ${breadth.flat} flat / ${breadth.down} turun / ${breadth.noTrans} no trans. Volume ${volumeText}, nilai ${valueText}.`;
   }catch(e){
     status.style.color='var(--red)'; status.textContent=`✗ Gagal mengambil data: ${e?.message||e}`;
   }finally{btn.disabled=false;btn.textContent=orig;}
