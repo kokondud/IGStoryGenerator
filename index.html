@@ -2479,7 +2479,8 @@ async function fetchIdxMarket(tab){
       up('wrap');
     }
     status.style.color='var(--green)';
-    status.textContent=`✓ IHSG ${fmtMktNum(Number(m.ihsg.price),2)} (${fmtMktChg(Number(m.ihsg.changePct))}), breadth ${breadth.up}/${breadth.flat}/${breadth.down}, dan sektor berhasil diambil via Yahoo Finance.`;
+    const sectorSource=summary.sectorSource||'Yahoo Finance';
+    status.textContent=`✓ IHSG ${fmtMktNum(Number(m.ihsg.price),2)} (${fmtMktChg(Number(m.ihsg.changePct))}), breadth ${breadth.up}/${breadth.flat}/${breadth.down}, sektor: ${sectorSource}.`;
   }catch(e){
     status.style.color='var(--red)';
     status.textContent=`✗ Gagal mengambil data: ${e?.message||e}`;
