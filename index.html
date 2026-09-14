@@ -2394,21 +2394,21 @@ async function fetchIdxMarket(tab){
   const status=document.getElementById(`fetch-${tab==='halftime'?'h':'w'}-market-status`);
   if(!btn||!status) return;
   const orig=btn.textContent;
-  btn.disabled=true; btn.textContent='⏳ Mengambil data...'; status.textContent='Mengambil Stock Summary resmi IDX...';
+  btn.disabled=true; btn.textContent='⏳ Mengambil data...'; status.textContent='Mengambil breadth intraday dari TradingView...';
   try{
-    // Breadth is IDX-only. Do not silently switch to Yahoo because the target
-    // universe must match IDX Stock Summary.
+    // Breadth uses the 963-code IDX/KISI master whitelist.
+    // OPTION A: missing TradingView codes are Suspended/No Transaction and
+    // are NOT counted as Flat. Extra TradingView instruments (e.g. ETFs)
+    // are ignored automatically by the Worker.
     const idxRes=await fetch(`${WORKER_URL}?market=idx&part=idx`);
-    if(!idxRes.ok) throw new Error(`Worker IDX HTTP ${idxRes.status}`);
+    if(!idxRes.ok) throw new Error(`Worker breadth HTTP ${idxRes.status}`);
     const idxData=await idxRes.json();
     if(idxData.error) throw new Error(idxData.error);
-    if(idxData.source!=='IDX Stock Summary') throw new Error('Sumber breadth bukan IDX Stock Summary');
-    if(!idxData.complete) throw new Error(`Data IDX tidak lengkap: ${idxData.recordsReceived}/${idxData.recordsExpected} saham`);
+    if(idxData.source!=='TradingView Scanner + IDX Master') throw new Error('Sumber breadth tidak sesuai');
+    if(!idxData.complete) throw new Error(`Data breadth tidak lengkap: ${idxData.breadth?.total||0}/${idxData.masterUniverse||963}`);
 
-    status.textContent=`✓ IDX ${idxData.recordsReceived} saham diterima. Mengambil IHSG & sektor...`;
+    status.textContent=`✓ ${idxData.recordsReceived}/${idxData.masterUniverse} saham cocok. Mengambil IHSG & sektor...`;
 
-    // IHSG + sector summary. Yahoo/Investing is only used for sector/index display,
-    // never for market breadth.
     const summaryRes=await fetch(`${WORKER_URL}?market=idx&part=summary`);
     if(!summaryRes.ok) throw new Error('Worker summary HTTP '+summaryRes.status);
     const summary=await summaryRes.json();
@@ -2424,13 +2424,12 @@ async function fetchIdxMarket(tab){
     document.getElementById(`${pfx}-flat`).value=breadth.flat??0;
     document.getElementById(`${pfx}-dn`).value=breadth.down??0;
 
-    // IDX Stock Summary Value/Volume are already market-wide aggregates of the
-    // returned stock rows. Format them for the KISI fields.
+    // Volume from matched TradingView stocks. Suspended/missing securities
+    // have no intraday volume and therefore do not contribute.
     const volume=Number(idxData.market?.volume||0);
-    const value=Number(idxData.market?.value||0);
     const fmtCompact=(n,unit,dec=1)=>`${(n/unit).toLocaleString('id-ID',{minimumFractionDigits:dec,maximumFractionDigits:dec})}${unit===1e9?'B':'T'}`;
     const volumeText=fmtCompact(volume,1e9,1);
-    const valueText='Rp'+fmtCompact(value,1e12,1);
+    const valueText=''; // TradingView scanner does not expose market-wide value.
     document.getElementById(`${pfx}-vol`).value=volumeText;
     document.getElementById(`${pfx}-val2`).value=valueText;
 
@@ -2447,7 +2446,7 @@ async function fetchIdxMarket(tab){
       up('wrap');
     }
     status.style.color='var(--green)';
-    status.textContent=`✓ IDX ${idxData.recordsReceived}/${idxData.recordsExpected} saham — ${breadth.up} naik / ${breadth.flat} flat / ${breadth.down} turun / ${breadth.noTrans} no trans. Volume ${volumeText}, nilai ${valueText}.`;
+    status.textContent=`✓ ${idxData.masterUniverse} master — ${breadth.up} naik / ${breadth.flat} flat / ${breadth.down} turun / ${breadth.noTrans} suspended/no trans. Volume ${volumeText}.`;
   }catch(e){
     status.style.color='var(--red)'; status.textContent=`✗ Gagal mengambil data: ${e?.message||e}`;
   }finally{btn.disabled=false;btn.textContent=orig;}
