@@ -1,0 +1,62 @@
+name: Data IDX (Wrap & Kalender)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Data yang diambil"
+        type: choice
+        options: [wrap, calendar]
+        default: wrap
+  schedule:
+    # Jam cron GitHub = UTC. WIB = UTC+7. GitHub kadang telat 5–20 menit.
+    - cron: "45 9 * * 1-5"    # 16:45 WIB  -> data penutupan (Wrap)
+    - cron: "20 10 * * 1-5"   # 17:20 WIB  -> ulang, jaga-jaga data IDX belum final
+    - cron: "0 22 * * 0-4"    # 05:00 WIB Senin–Jumat -> kalender (Morning)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: idx-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tentukan mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 22 * * 0-4" ]; then
+            echo "mode=calendar" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=wrap" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Playwright
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Ambil data (${{ steps.mode.outputs.mode }})
+        run: python scripts/fetch_idx_data.py ${{ steps.mode.outputs.mode }}
+
+      - name: Simpan ke repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/
+          git diff --cached --quiet && { echo "Tidak ada perubahan"; exit 0; }
+          git commit -m "data: ${{ steps.mode.outputs.mode }} $(TZ=Asia/Jakarta date '+%Y-%m-%d %H:%M') WIB"
+          git pull --rebase
+          git push
