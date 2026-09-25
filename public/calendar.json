@@ -1,1 +1,7 @@
-{"ok":false,"idx":[],"macro":[],"note":"Belum ada data. Jalankan workflow \"Data IDX\" mode calendar."}
+{
+ "ok": true,
+ "generatedAt": "2026-09-25T11:11:36.646489+00:00",
+ "idx": [],
+ "macro": [],
+ "note": "Agenda emiten dibaca otomatis dari situs IDX; cek public/calendar-raw.json bila kosong."
+}
